@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Safety Ninja Break Time Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; background: #111827; color: white; }
+    .card { transition: all 0.2s; background: #FEFEFE; color: #111827; }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2); }
+  </style>
+</head>
+<body class="py-6">
+
+<div class="max-w-2xl mx-auto px-4">
+
+  <!-- Clock In -->
+  <div class="card rounded-3xl shadow-md p-6 mb-8 border border-blue-200">
+    <label class="block uppercase text-blue-600 text-sm font-bold tracking-widest mb-3">CLOCK IN TIME</label>
+    <div class="flex flex-wrap items-end gap-6">
+      <input type="time" id="clockIn" onchange="calculateBreaks()" class="text-4xl font-bold bg-white border border-gray-300 text-gray-900 rounded-2xl px-6 py-4 focus:outline-none focus:ring-4 focus:ring-blue-200 w-full sm:w-auto">
+      <div>
+        <div class="text-xs text-gray-500 font-semibold">SELECTED TIME</div>
+        <div id="displayTime" class="text-4xl font-bold text-blue-600"></div>
+      </div>
+    </div>
+    <div class="flex gap-3 mt-6">
+      <button onclick="resetToNow()" class="flex-1 flex items-center justify-center gap-2 bg-transparent border-2 border-blue-600 text-blue-600 hover:bg-blue-50 px-6 py-3 rounded-2xl font-bold">
+        <i class="fas fa-redo"></i> Reset to Now
+      </button>
+      <button onclick="window.print()" class="flex-1 flex items-center justify-center gap-2 bg-transparent border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50 px-6 py-3 rounded-2xl font-bold">
+        <i class="fas fa-print"></i> Print / Save as PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- 10 Min Breaks -->
+  <div class="mb-8">
+    <h2 class="uppercase text-xs font-bold text-gray-400 mb-4 px-1">10-Minute Breaks</h2>
+    <div id="tenMinBreaks" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+  </div>
+
+  <!-- 30 Min Meals -->
+  <div class="mb-8">
+    <h2 class="uppercase text-xs font-bold text-gray-400 mb-4 px-1">30-Minute Meal Breaks</h2>
+    <div id="mealBreaks" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+  </div>
+
+  <!-- Tips -->
+  <div id="tipsSection" class="space-y-6"></div>
+
+</div>
+
+<script>
+// ============== FULL LOGIC ==============
+const SAFETY_TIPS = ["Maintain safe following distance: one second per 10 feet of vehicle length plus extra for speed and conditions. Space saves lives.","Drive defensively with SAFR: Scan hazards, Anticipate actions, Follow safely, React properly—stay one step ahead.","Fatigue is as dangerous as impairment. When drowsy, pull over and rest. Arrive alive, not just on time.","Eyes on the road, hands on the wheel, mind on driving. One distraction can change everything—pull over to communicate.","In rain, fog, snow, or wind: slow down, increase distance, stay in control. Better late than never home.","Liquid loads shift easily. Slow in curves, manage speed—prevent rollover and keep your rig upright.","When backing, use G.O.A.L.—Get Out And Look every time. Blind spots kill; caution saves.","Inspect thoroughly before you roll and after you stop. A missed defect can end your day or your life.","Complacency creeps in on familiar routes. Stay sharp every mile—routine is the silent killer.","Know your Emergency Response Guidebook. In any incident, consult it first to protect yourself and others.","Bond and ground properly, verify loads with 3-point match every time. Prevent sparks and incompatible mixes.","Hot conditions? Hydrate often, take breaks, watch for heat illness signs—your body works as hard as your truck.","Know your fire extinguisher—PASS: Pull, Aim, Squeeze, Sweep. Be ready before fire spreads.","Stay calm at the scene, secure the area, report accurately. Every incident is a lesson for safer driving.","Your body is your most important cargo. Lift smart, eat right, rest well—wellness keeps you rolling.","Watch your step around equipment and yards. Use three points of contact on ladders—one slip can sideline you.","Stay vigilant at stops and deliveries. Report suspicious activity—awareness prevents violence and threats.","Professional and courteous engagement builds trust. Represent the industry safely at every stop.","Safety is always priority one. No load is worth risking your life or your family's peace of mind.","Drive like your family rides with you on every haul. Stay alert, prepared, and committed to zero incidents."];
+
+const PRE_TRIP_TIPS = ["Cab steering wheel: Check play is under 2 inches on a 20-inch wheel","Cab horn: Make sure it works properly","Cab wipers and washers: Check they work and blades are good","Cab mirrors: Clean, secure, and adjusted correctly","Cab gauges: All read normal with no warning lights","Cab seatbelts and emergency kit: Check seatbelts and make sure fire extinguisher is present","Cab brakes: Parking brake holds and service brakes work with no pulling","Cab controls: Clutch and accelerator work smoothly","Engine oil: Level is good with no leaks","Engine coolant: Level is correct and hoses have no leaks","Engine power steering: Fluid level correct and hoses secure","Engine belts: Not cracked or loose with good tension","Engine hoses: Secure with no cracks, bulges, or leaks","Engine batteries: Secure with clean terminals","Engine air system: Compressor and lines secure with no leaks","Front lights: Headlights, signals, markers, and reflectors clean and working","Front windshield: Glass has no cracks","Front bumper and grille: Secure with no damage","Front steering tires: Inflated correctly with tread at least 4/32 inch and no cuts","Front steering parts: Secure with little play","Driver fuel tank: Secure, no leaks, cap and gasket tight","Driver exhaust: Secure with good clearance and no leaks","Driver frame: Rails have no cracks","Driver drive tires: Inflated correctly with minimum 2/32 inch tread and tight lug nuts","Driver suspension: Springs and air bags have no damage and even height","Driver air brakes: Lines and chambers secure with no leaks","Driver side lights: Marker lights, reflectors, and tape intact","Rear fifth wheel: Kingpin secure, lubricated, and locked","Rear lights: Taillights and brake signals work","Rear mud flaps: Secure and not torn","Rear drive tires and suspension: Same as driver side","Passenger side: Mirrors, fuel tank, exhaust, and frame intact","Undercarriage: Driveline, u-joints, and differential secure with no leaks","Undercarriage brakes: Drums and rotors have no cracks, grease, or wear","Undercarriage air brakes: Build pressure correctly with no leaks and good pushrod travel","Tank manhole and valves: Vents, fittings, and gaskets secure with no leaks","Tank emergency shutoff: Switch works properly","Tank placards: Check they are correct for the load","Tank labels: Spec plate and retest dates current and easy to read","Tank safety gear: Grounding, bonding, spill kit, and PPE available","Tank catwalk and fenders: Clear, safe, and no damage","Overall vehicle: No fluid leaks, loose parts, or damage underneath","Cab documents: Shipping papers and hazmat docs current and accessible","Trailer brakes and lights: Connected and tested, all working"];
+
+function randomTip() { return SAFETY_TIPS[Math.floor(Math.random() * SAFETY_TIPS.length)]; }
+function randomPreTrip() { return PRE_TRIP_TIPS[Math.floor(Math.random() * PRE_TRIP_TIPS.length)]; }
+
+function formatTime(date) {
+  let h = date.getHours();
+  let m = date.getMinutes();
+  const ampm = h >= 12 ? "PM" : "AM";
+  h = h % 12 || 12;
+  return `\( {h}: \){m.toString().padStart(2,'0')} ${ampm}`;
+}
+
+function addMinutes(date, mins) {
+  return new Date(date.getTime() + mins * 60000);
+}
+
+function formatWithDay(base, result) {
+  const diff = Math.round((result - base) / 86400000);
+  const time = formatTime(result);
+  return diff === 1 ? `${time} (next day)` : time;
+}
+
+function createCard(label, duration, after, before, icon) {
+  return `
+    <div class="card rounded-3xl shadow p-6 border border-gray-200">
+      <div class="flex items-center gap-3 mb-4">
+        <i class="${icon} text-2xl text-blue-600"></i>
+        <div class="font-bold text-lg">\( {label} <span class="text-blue-600">( \){duration})</span></div>
+      </div>
+      <div class="space-y-3 text-sm">
+        <div><span class="font-semibold text-emerald-600">START AFTER:</span> <span class="font-medium">${after}</span></div>
+        <div><span class="font-semibold text-amber-600">START BEFORE:</span> <span class="font-medium">${before}</span></div>
+      </div>
+    </div>`;
+}
+
+function calculateBreaks() {
+  const timeInput = document.getElementById('clockIn').value;
+  if (!timeInput) return;
+
+  const [hours, minutes] = timeInput.split(':').map(Number);
+  const base = new Date();
+  base.setHours(hours, minutes, 0, 0);
+
+  const tenDefs = [{label:"Break #1", after:1, before:239},{label:"Break #2", after:241, before:479},{label:"Break #3", after:481, before:719},{label:"Break #4", after:721, before:959}];
+  let html10 = '';
+  tenDefs.forEach(d => {
+    const afterTime = formatWithDay(base, addMinutes(base, d.after));
+    const beforeTime = formatWithDay(base, addMinutes(base, d.before));
+    html10 += createCard(d.label, "10 MIN", afterTime, beforeTime, "fas fa-clock");
+  });
+  document.getElementById('tenMinBreaks').innerHTML = html10;
+
+  const mealDefs = [{label:"Meal #1", after:211, before:359},{label:"Meal #2", after:631, before:779}];
+  let htmlMeal = '';
+  mealDefs.forEach(d => {
+    const afterTime = formatWithDay(base, addMinutes(base, d.after));
+    const beforeTime = formatWithDay(base, addMinutes(base, d.before));
+    htmlMeal += createCard(d.label, "30 MIN", afterTime, beforeTime, "fas fa-utensils");
+  });
+  document.getElementById('mealBreaks').innerHTML = htmlMeal;
+
+  const ampm = hours >= 12 ? "PM" : "AM";
+  const h12 = hours % 12 || 12;
+  document.getElementById('displayTime').textContent = `\( {h12}: \){minutes.toString().padStart(2,'0')} ${ampm}`;
+
+  const tipsHTML = `
+    <div class="card rounded-3xl p-6 border border-emerald-200">
+      <div class="flex items-center gap-3 mb-3">
+        <i class="fas fa-shield-alt text-2xl text-emerald-600"></i>
+        <h3 class="font-bold text-emerald-700">Safety Tip of the Day</h3>
+      </div>
+      <p class="text-gray-800">${randomTip()}</p>
+    </div>
+    <div class="card rounded-3xl p-6 border border-amber-200">
+      <div class="flex items-center gap-3 mb-3">
+        <i class="fas fa-clipboard-check text-2xl text-amber-600"></i>
+        <h3 class="font-bold text-amber-700">Pre-Trip Tip of the Day</h3>
+      </div>
+      <p class="text-gray-800">${randomPreTrip()}</p>
+    </div>`;
+  document.getElementById('tipsSection').innerHTML = tipsHTML;
+}
+
+function resetToNow() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2, '0');
+  const m = String(now.getMinutes()).padStart(2, '0');
+  document.getElementById('clockIn').value = `\( {h}: \){m}`;
+  calculateBreaks();
+}
+
+window.onload = () => resetToNow();
+</script>
+</body>
+</html>
