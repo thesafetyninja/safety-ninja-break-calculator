@@ -77,7 +77,7 @@
 </div>
 
 <script>
-// ============== SAFETY TIPS (23 refined tips) ==============
+// ============== SAFETY TIPS ==============
 const SAFETY_TIPS = [
   "Following distance — Maintain one second of following distance for every 10 feet of your vehicle’s length, plus extra space for speed and conditions. Space saves lives. (Smith System)",
   "Defensive driving — Drive defensively using SAFR: Scan for hazards, Anticipate other drivers’ actions, Follow safely, and React properly. (Smith System)",
@@ -241,19 +241,19 @@ function calculateBreaks() {
   });
   document.getElementById('mealBreaks').innerHTML = htmlMeal;
 
-  // Interactive tip cards
+  // Interactive tip cards with "(press to refresh)"
   const tipsHTML = `
     <div onclick="refreshSafetyTip()" class="card rounded-3xl p-6">
       <div class="flex items-center gap-3 mb-3">
         <i class="fas fa-shield-alt text-2xl text-emerald-600"></i>
-        <h3 class="font-bold text-emerald-700">Safety Tip of the Day</h3>
+        <h3 class="font-bold text-emerald-700">Safety Tip of the Day <span class="text-xs font-normal text-black">(press to refresh)</span></h3>
       </div>
       <p id="safetyTipText" class="text-gray-800">${randomTip()}</p>
     </div>
     <div onclick="refreshPreTripTip()" class="card rounded-3xl p-6">
       <div class="flex items-center gap-3 mb-3">
         <i class="fas fa-clipboard-check text-2xl text-amber-600"></i>
-        <h3 class="font-bold text-amber-700">Pre-Trip Tip of the Day</h3>
+        <h3 class="font-bold text-amber-700">Pre-Trip Tip of the Day <span class="text-xs font-normal text-black">(press to refresh)</span></h3>
       </div>
       <p id="preTripTipText" class="text-gray-800">${randomPreTrip()}</p>
     </div>`;
