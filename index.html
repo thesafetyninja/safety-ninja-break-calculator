@@ -96,20 +96,22 @@
     <!-- 10-minute breaks -->
     <div class="border-t pt-4 mb-6">
       <h3 class="text-xs font-bold text-emerald-600 mb-2">10-MINUTE BREAKS</h3>
-      <div class="space-y-4">
-        <div><label class="block font-medium">Break #1 — After X / Before X / Y</label><div class="flex gap-2"><input id="dbgTen1AfterX" type="number" value="80" class="flex-1 px-3 py-2 border rounded-xl"><input id="dbgTen1BeforeX" type="number" value="220" class="flex-1 px-3 py-2 border rounded-xl"><input id="dbgTen1Y" type="number" value="220" class="flex-1 px-3 py-2 border rounded-xl"></div></div>
-        <div><label class="block font-medium">Break #2 — After X / Before X / Y</label><div class="flex gap-2"><input id="dbgTen2AfterX" type="number" value="80" class="flex-1 px-3 py-2 border rounded-xl"><input id="dbgTen2BeforeX" type="number" value="220" class="flex-1 px-3 py-2 border rounded-xl"><input id="dbgTen2Y" type="number" value="250" class="flex-1 px-3 py-2 border rounded-xl"></div></div>
-        <div><label class="block font-medium">Break #3 — After X / Before X / Y</label><div class="flex gap-2"><input id="dbgTen3AfterX" type="number" value="80" class="flex-1 px-3 py-2 border rounded-xl"><input id="dbgTen3BeforeX" type="number" value="220" class="flex-1 px-3 py-2 border rounded-xl"><input id="dbgTen3Y" type="number" value="280" class="flex-1 px-3 py-2 border rounded-xl"></div></div>
-        <div><label class="block font-medium">Break #4 — After X / Before X / Y</label><div class="flex gap-2"><input id="dbgTen4AfterX" type="number" value="80" class="flex-1 px-3 py-2 border rounded-xl"><input id="dbgTen4BeforeX" type="number" value="220" class="flex-1 px-3 py-2 border rounded-xl"><input id="dbgTen4Y" type="number" value="310" class="flex-1 px-3 py-2 border rounded-xl"></div></div>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+        <div><label>Start Y</label><input id="dbgTenY" type="number" value="220" class="w-full px-3 py-2 border rounded-xl"></div>
+        <div><label>Line Spacing</label><input id="dbgTenSpacing" type="number" value="18" class="w-full px-3 py-2 border rounded-xl"></div>
+        <div><label>After X</label><input id="dbgTenAfterX" type="number" value="80" class="w-full px-3 py-2 border rounded-xl"></div>
+        <div><label>Before X</label><input id="dbgTenBeforeX" type="number" value="220" class="w-full px-3 py-2 border rounded-xl"></div>
       </div>
     </div>
 
     <!-- 30-minute meals -->
     <div class="border-t pt-4">
       <h3 class="text-xs font-bold text-amber-600 mb-2">30-MINUTE MEAL BREAKS</h3>
-      <div class="space-y-4">
-        <div><label class="block font-medium">Meal #1 — After X / Before X / Y</label><div class="flex gap-2"><input id="dbgMeal1AfterX" type="number" value="80" class="flex-1 px-3 py-2 border rounded-xl"><input id="dbgMeal1BeforeX" type="number" value="220" class="flex-1 px-3 py-2 border rounded-xl"><input id="dbgMeal1Y" type="number" value="350" class="flex-1 px-3 py-2 border rounded-xl"></div></div>
-        <div><label class="block font-medium">Meal #2 — After X / Before X / Y</label><div class="flex gap-2"><input id="dbgMeal2AfterX" type="number" value="80" class="flex-1 px-3 py-2 border rounded-xl"><input id="dbgMeal2BeforeX" type="number" value="220" class="flex-1 px-3 py-2 border rounded-xl"><input id="dbgMeal2Y" type="number" value="380" class="flex-1 px-3 py-2 border rounded-xl"></div></div>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+        <div><label>Start Y</label><input id="dbgMealY" type="number" value="320" class="w-full px-3 py-2 border rounded-xl"></div>
+        <div><label>Line Spacing</label><input id="dbgMealSpacing" type="number" value="18" class="w-full px-3 py-2 border rounded-xl"></div>
+        <div><label>After X</label><input id="dbgMealAfterX" type="number" value="80" class="w-full px-3 py-2 border rounded-xl"></div>
+        <div><label>Before X</label><input id="dbgMealBeforeX" type="number" value="220" class="w-full px-3 py-2 border rounded-xl"></div>
       </div>
     </div>
 
@@ -122,7 +124,7 @@
 </div>
 
 <script>
-// ============== FULL SAFETY TIPS ==============
+// ============== FULL SAFETY & PRE-TRIP TIPS ==============
 const SAFETY_TIPS = [
   "Following distance — Maintain one second of following distance for every 10 feet of your vehicle’s length, plus extra space for speed and conditions. Space saves lives. (Smith System)",
   "Defensive driving — Drive defensively using SAFR: Scan for hazards, Anticipate other drivers’ actions, Follow safely, and React properly. (Smith System)",
@@ -377,20 +379,14 @@ async function generateDebugPDF() {
 }
 
 function resetDebugToDefault() {
-  document.getElementById('dbgTen1Y').value = 220;
-  document.getElementById('dbgTen2Y').value = 250;
-  document.getElementById('dbgTen3Y').value = 280;
-  document.getElementById('dbgTen4Y').value = 310;
-  document.getElementById('dbgMeal1Y').value = 350;
-  document.getElementById('dbgMeal2Y').value = 380;
-  for (let i = 1; i <= 4; i++) {
-    document.getElementById(`dbgTen${i}AfterX`).value = 80;
-    document.getElementById(`dbgTen${i}BeforeX`).value = 220;
-  }
-  for (let i = 1; i <= 2; i++) {
-    document.getElementById(`dbgMeal${i}AfterX`).value = 80;
-    document.getElementById(`dbgMeal${i}BeforeX`).value = 220;
-  }
+  document.getElementById('dbgTenY').value = 220;
+  document.getElementById('dbgTenSpacing').value = 18;
+  document.getElementById('dbgTenAfterX').value = 80;
+  document.getElementById('dbgTenBeforeX').value = 220;
+  document.getElementById('dbgMealY').value = 320;
+  document.getElementById('dbgMealSpacing').value = 18;
+  document.getElementById('dbgMealAfterX').value = 80;
+  document.getElementById('dbgMealBeforeX').value = 220;
   document.getElementById('dbgBreakSize').value = 7;
 }
 
