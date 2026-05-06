@@ -54,44 +54,58 @@
   <!-- Optional Load Tracker -->
   <div class="card rounded-3xl shadow-md p-6 mt-12">
     <h2 class="uppercase text-xs font-bold text-amber-600 tracking-widest mb-4">GENERATE OPTIONAL LOAD TRACKER FORM</h2>
-    <!-- ... existing form selector and inputs ... -->
+    <div class="grid grid-cols-2 gap-4 mb-6">
+      <button onclick="selectForm('Semi')" id="btnSemi" class="form-select-btn active flex flex-col items-center py-4 border-2 border-emerald-600 rounded-2xl hover:bg-emerald-50">
+        <i class="fas fa-truck text-3xl text-emerald-600 mb-2"></i>
+        <span class="font-bold">Semi</span>
+      </button>
+      <button onclick="selectForm('T&T')" id="btnTandT" class="form-select-btn flex flex-col items-center py-4 border-2 border-gray-300 rounded-2xl hover:bg-gray-50">
+        <i class="fas fa-trailer text-3xl text-amber-600 mb-2"></i>
+        <span class="font-bold">T&amp;T</span>
+      </button>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+      <div><label class="block text-xs font-bold text-gray-500 mb-1">TRUCK #</label><input id="truckNum" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-200"></div>
+      <div><label class="block text-xs font-bold text-gray-500 mb-1">TRAILER #</label><input id="trailerNum" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-200"></div>
+      <div><label class="block text-xs font-bold text-gray-500 mb-1">START MILEAGE</label><input id="startMileage" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-200"></div>
+    </div>
     <button onclick="generateLoadTrackerPDF()" class="w-full flex items-center justify-center gap-3 font-bold py-4 rounded-2xl text-lg" style="background-color:#FFD31F; color:#111827;">
       <i class="fas fa-file-pdf"></i> Print Tracker
     </button>
   </div>
 
-  <!-- ==================== LIVE DEBUG PANEL ==================== -->
+  <!-- LIVE DEBUG PANEL -->
   <div class="card rounded-3xl shadow-md p-6 mt-12 bg-amber-50">
     <h2 class="uppercase text-xs font-bold text-amber-600 tracking-widest mb-4 flex items-center gap-2">
       <i class="fas fa-sliders-h"></i> PDF Position Debug Panel
     </h2>
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 text-sm">
       <div>
-        <label class="block font-medium">Clock-in Time</label>
+        <label class="block font-medium">Clock-in Time X/Y/Size</label>
         <input id="dbgClockX" type="number" value="380" class="w-full px-3 py-2 border rounded-xl">
         <input id="dbgClockY" type="number" value="95" class="w-full px-3 py-2 border rounded-xl mt-1">
         <input id="dbgClockSize" type="number" value="8" class="w-full px-3 py-2 border rounded-xl mt-1">
       </div>
       <div>
-        <label class="block font-medium">Date</label>
+        <label class="block font-medium">Date X/Y/Size</label>
         <input id="dbgDateX" type="number" value="480" class="w-full px-3 py-2 border rounded-xl">
         <input id="dbgDateY" type="number" value="95" class="w-full px-3 py-2 border rounded-xl mt-1">
         <input id="dbgDateSize" type="number" value="8" class="w-full px-3 py-2 border rounded-xl mt-1">
       </div>
       <div>
-        <label class="block font-medium">Truck #</label>
+        <label class="block font-medium">Truck # X/Y/Size</label>
         <input id="dbgTruckX" type="number" value="180" class="w-full px-3 py-2 border rounded-xl">
         <input id="dbgTruckY" type="number" value="135" class="w-full px-3 py-2 border rounded-xl mt-1">
         <input id="dbgTruckSize" type="number" value="9" class="w-full px-3 py-2 border rounded-xl mt-1">
       </div>
       <div>
-        <label class="block font-medium">Trailer #</label>
+        <label class="block font-medium">Trailer # X/Y/Size</label>
         <input id="dbgTrailerX" type="number" value="280" class="w-full px-3 py-2 border rounded-xl">
         <input id="dbgTrailerY" type="number" value="135" class="w-full px-3 py-2 border rounded-xl mt-1">
         <input id="dbgTrailerSize" type="number" value="9" class="w-full px-3 py-2 border rounded-xl mt-1">
       </div>
       <div>
-        <label class="block font-medium">Start Mileage</label>
+        <label class="block font-medium">Start Mileage X/Y/Size</label>
         <input id="dbgMileageX" type="number" value="420" class="w-full px-3 py-2 border rounded-xl">
         <input id="dbgMileageY" type="number" value="135" class="w-full px-3 py-2 border rounded-xl mt-1">
         <input id="dbgMileageSize" type="number" value="9" class="w-full px-3 py-2 border rounded-xl mt-1">
@@ -123,7 +137,9 @@
 </div>
 
 <script>
-// (All your existing SAFETY_TIPS, PRE_TRIP_TIPS, calculateBreaks, randomTip, etc. remain unchanged — only the PDF part is updated)
+// ============== SAFETY TIPS ==============
+const SAFETY_TIPS = [ /* full list from previous message */ ];
+const PRE_TRIP_TIPS = [ /* full list from previous message */ ];
 
 let currentClockTime = "";
 let currentDate = "";
@@ -131,10 +147,134 @@ let currentTenBreaks = [];
 let currentMeals = [];
 let lastSafetyIndex = -1;
 let lastPreTripIndex = -1;
+let selectedForm = "Semi";
 
-// ... (randomTip, randomPreTrip, formatTime, addMinutes, formatWithDay, createCard, calculateBreaks, refresh functions, resetToNow, selectForm — all same as before) ...
+function randomTip() {
+  let index;
+  do { index = Math.floor(Math.random() * SAFETY_TIPS.length); } while (index === lastSafetyIndex);
+  lastSafetyIndex = index;
+  return SAFETY_TIPS[index];
+}
 
-// ============== LIVE DEBUG PDF GENERATOR ==============
+function randomPreTrip() {
+  let index;
+  do { index = Math.floor(Math.random() * PRE_TRIP_TIPS.length); } while (index === lastPreTripIndex);
+  lastPreTripIndex = index;
+  return PRE_TRIP_TIPS[index];
+}
+
+function formatTime(date) {
+  let h = date.getHours(); let m = date.getMinutes();
+  const ampm = h >= 12 ? "PM" : "AM";
+  h = h % 12 || 12;
+  return `${h}:${m.toString().padStart(2,'0')} ${ampm}`;
+}
+
+function addMinutes(date, mins) {
+  return new Date(date.getTime() + mins * 60000);
+}
+
+function formatWithDay(base, result) {
+  const diff = Math.round((result - base) / 86400000);
+  const time = formatTime(result);
+  return diff === 1 ? `${time} (next day)` : time;
+}
+
+function createCard(label, duration, after, before, icon) {
+  return `<div class="card rounded-3xl shadow p-6">
+    <div class="flex items-center gap-3 mb-4">
+      <i class="${icon} text-2xl text-blue-600"></i>
+      <div class="font-bold text-lg">${label} <span class="text-black">(${duration})</span></div>
+    </div>
+    <div class="space-y-3 text-sm">
+      <div><span class="font-semibold text-emerald-600">START AFTER:</span> <span class="font-medium">${after}</span></div>
+      <div><span class="font-semibold text-amber-600">START BEFORE:</span> <span class="font-medium">${before}</span></div>
+    </div>
+  </div>`;
+}
+
+function calculateBreaks() {
+  const timeInput = document.getElementById('clockIn').value;
+  if (!timeInput) return;
+  const [hours, minutes] = timeInput.split(':').map(Number);
+  const base = new Date();
+  base.setHours(hours, minutes, 0, 0);
+
+  const ampm = hours >= 12 ? "PM" : "AM";
+  const h12 = hours % 12 || 12;
+  currentClockTime = `${h12}:${minutes.toString().padStart(2,'0')} ${ampm}`;
+  document.getElementById('displayTime').textContent = currentClockTime;
+
+  const today = new Date();
+  const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  currentDate = today.toLocaleDateString('en-US', dateOptions);
+  document.getElementById('displayDate').textContent = currentDate;
+
+  const tenDefs = [{label:"Break #1", after:1, before:239},{label:"Break #2", after:241, before:479},{label:"Break #3", after:481, before:719},{label:"Break #4", after:721, before:959}];
+  currentTenBreaks = [];
+  let html10 = '';
+  tenDefs.forEach(d => {
+    const afterTime = formatWithDay(base, addMinutes(base, d.after));
+    const beforeTime = formatWithDay(base, addMinutes(base, d.before));
+    currentTenBreaks.push({label:d.label, duration:"10 MIN", after:afterTime, before:beforeTime, afterClean:afterTime.replace(' (next day)',''), beforeClean:beforeTime.replace(' (next day)','')});
+    html10 += createCard(d.label, "10 MIN", afterTime, beforeTime, "fas fa-clock");
+  });
+  document.getElementById('tenMinBreaks').innerHTML = html10;
+
+  const mealDefs = [{label:"Meal #1", after:211, before:359},{label:"Meal #2", after:631, before:779}];
+  currentMeals = [];
+  let htmlMeal = '';
+  mealDefs.forEach(d => {
+    const afterTime = formatWithDay(base, addMinutes(base, d.after));
+    const beforeTime = formatWithDay(base, addMinutes(base, d.before));
+    currentMeals.push({label:d.label, duration:"30 MIN", after:afterTime, before:beforeTime, afterClean:afterTime.replace(' (next day)',''), beforeClean:beforeTime.replace(' (next day)','')});
+    htmlMeal += createCard(d.label, "30 MIN", afterTime, beforeTime, "fas fa-utensils");
+  });
+  document.getElementById('mealBreaks').innerHTML = htmlMeal;
+
+  const tipsHTML = `
+    <div onclick="refreshSafetyTip()" class="card rounded-3xl p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <i class="fas fa-shield-alt text-2xl text-emerald-600"></i>
+        <h3 class="font-bold text-emerald-700">Safety Tip of the Day <span class="text-xs font-normal text-black">(press to refresh)</span></h3>
+      </div>
+      <p id="safetyTipText" class="text-gray-800">${randomTip()}</p>
+    </div>
+    <div onclick="refreshPreTripTip()" class="card rounded-3xl p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <i class="fas fa-clipboard-check text-2xl text-amber-600"></i>
+        <h3 class="font-bold text-amber-700">Pre-Trip Tip of the Day <span class="text-xs font-normal text-black">(press to refresh)</span></h3>
+      </div>
+      <p id="preTripTipText" class="text-gray-800">${randomPreTrip()}</p>
+    </div>`;
+  document.getElementById('tipsSection').innerHTML = tipsHTML;
+}
+
+function refreshSafetyTip() { document.getElementById('safetyTipText').textContent = randomTip(); }
+function refreshPreTripTip() { document.getElementById('preTripTipText').textContent = randomPreTrip(); }
+
+function resetToNow() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2, '0');
+  const m = String(now.getMinutes()).padStart(2, '0');
+  document.getElementById('clockIn').value = `${h}:${m}`;
+  calculateBreaks();
+}
+
+function selectForm(form) {
+  document.getElementById('btnSemi').classList.remove('active');
+  document.getElementById('btnTandT').classList.remove('active');
+  if (form === 'Semi') document.getElementById('btnSemi').classList.add('active');
+  else document.getElementById('btnTandT').classList.add('active');
+  selectedForm = form;
+}
+
+async function generateLoadTrackerPDF() {
+  // Uses current debug values
+  generateDebugPDF();
+}
+
+// ============== DEBUG PANEL FUNCTIONS ==============
 async function generateDebugPDF() {
   const truck = document.getElementById('truckNum').value.trim() || "—";
   const trailer = document.getElementById('trailerNum').value.trim() || "—";
@@ -142,38 +282,36 @@ async function generateDebugPDF() {
 
   const base64 = selectedForm === "Semi" ? SEMI_PDF_BASE64 : TANDT_PDF_BASE64;
   const pdfBytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
-  
   const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
   const page = pdfDoc.getPages()[0];
   const { height } = page.getSize();
 
-  // Read live values from debug panel
-  const clockX = parseFloat(document.getElementById('dbgClockX').value);
-  const clockY = parseFloat(document.getElementById('dbgClockY').value);
-  const clockSize = parseFloat(document.getElementById('dbgClockSize').value);
+  // Read live debug values
+  const clockX = parseFloat(document.getElementById('dbgClockX').value) || 380;
+  const clockY = parseFloat(document.getElementById('dbgClockY').value) || 95;
+  const clockSize = parseFloat(document.getElementById('dbgClockSize').value) || 8;
 
-  const dateX = parseFloat(document.getElementById('dbgDateX').value);
-  const dateY = parseFloat(document.getElementById('dbgDateY').value);
-  const dateSize = parseFloat(document.getElementById('dbgDateSize').value);
+  const dateX = parseFloat(document.getElementById('dbgDateX').value) || 480;
+  const dateY = parseFloat(document.getElementById('dbgDateY').value) || 95;
+  const dateSize = parseFloat(document.getElementById('dbgDateSize').value) || 8;
 
-  const truckX = parseFloat(document.getElementById('dbgTruckX').value);
-  const truckY = parseFloat(document.getElementById('dbgTruckY').value);
-  const truckSize = parseFloat(document.getElementById('dbgTruckSize').value);
+  const truckX = parseFloat(document.getElementById('dbgTruckX').value) || 180;
+  const truckY = parseFloat(document.getElementById('dbgTruckY').value) || 135;
+  const truckSize = parseFloat(document.getElementById('dbgTruckSize').value) || 9;
 
-  const trailerX = parseFloat(document.getElementById('dbgTrailerX').value);
-  const trailerY = parseFloat(document.getElementById('dbgTrailerY').value);
-  const trailerSize = parseFloat(document.getElementById('dbgTrailerSize').value);
+  const trailerX = parseFloat(document.getElementById('dbgTrailerX').value) || 280;
+  const trailerY = parseFloat(document.getElementById('dbgTrailerY').value) || 135;
+  const trailerSize = parseFloat(document.getElementById('dbgTrailerSize').value) || 9;
 
-  const mileageX = parseFloat(document.getElementById('dbgMileageX').value);
-  const mileageY = parseFloat(document.getElementById('dbgMileageY').value);
-  const mileageSize = parseFloat(document.getElementById('dbgMileageSize').value);
+  const mileageX = parseFloat(document.getElementById('dbgMileageX').value) || 420;
+  const mileageY = parseFloat(document.getElementById('dbgMileageY').value) || 135;
+  const mileageSize = parseFloat(document.getElementById('dbgMileageSize').value) || 9;
 
-  const breakStartY = parseFloat(document.getElementById('dbgBreakY').value);
-  const breakSpacing = parseFloat(document.getElementById('dbgBreakSpacing').value);
-  const afterX = parseFloat(document.getElementById('dbgAfterX').value);
-  const beforeX = parseFloat(document.getElementById('dbgBeforeX').value);
+  const breakStartY = parseFloat(document.getElementById('dbgBreakY').value) || 220;
+  const breakSpacing = parseFloat(document.getElementById('dbgBreakSpacing').value) || 14;
+  const afterX = parseFloat(document.getElementById('dbgAfterX').value) || 80;
+  const beforeX = parseFloat(document.getElementById('dbgBeforeX').value) || 220;
 
-  // Draw everything using live values
   page.drawText(currentClockTime, { x: clockX, y: height - clockY, size: clockSize });
   page.drawText(currentDate, { x: dateX, y: height - dateY, size: dateSize });
   page.drawText(truck, { x: truckX, y: height - truckY, size: truckSize });
