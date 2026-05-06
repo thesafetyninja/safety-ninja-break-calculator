@@ -74,11 +74,11 @@
     </button>
   </div>
 
-  <!-- LIVE DEBUG PANEL – Individual control for EVERY break -->
+  <!-- LIVE DEBUG PANEL -->
   <div class="card rounded-3xl shadow-md p-6 mt-12 bg-amber-50">
     <h2 class="uppercase text-xs font-bold text-amber-600 tracking-widest mb-4">PDF Position Debug Panel</h2>
 
-    <!-- Header fields (keep your tuned values here) -->
+    <!-- Header fields (your tuned values stay here) -->
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 text-sm mb-8">
       <div><label>Clock-in X/Y/Size</label><input id="dbgClockX" type="number" value="380" class="w-full px-3 py-2 border rounded-xl"><input id="dbgClockY" type="number" value="95" class="w-full px-3 py-2 border rounded-xl mt-1"><input id="dbgClockSize" type="number" value="8" class="w-full px-3 py-2 border rounded-xl mt-1"></div>
       <div><label>Date X/Y/Size</label><input id="dbgDateX" type="number" value="480" class="w-full px-3 py-2 border rounded-xl"><input id="dbgDateY" type="number" value="95" class="w-full px-3 py-2 border rounded-xl mt-1"><input id="dbgDateSize" type="number" value="8" class="w-full px-3 py-2 border rounded-xl mt-1"></div>
@@ -87,9 +87,14 @@
       <div><label>Mileage X/Y/Size</label><input id="dbgMileageX" type="number" value="420" class="w-full px-3 py-2 border rounded-xl"><input id="dbgMileageY" type="number" value="135" class="w-full px-3 py-2 border rounded-xl mt-1"><input id="dbgMileageSize" type="number" value="9" class="w-full px-3 py-2 border rounded-xl mt-1"></div>
     </div>
 
+    <!-- Break Font Size -->
+    <div class="mb-6">
+      <label class="block text-xs font-bold text-gray-600 mb-1">Break Font Size (all breaks)</label>
+      <input id="dbgBreakSize" type="number" value="7" class="w-full px-3 py-2 border rounded-xl">
+    </div>
+
     <!-- Individual controls for every break -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <!-- 10-minute breaks -->
       <div>
         <h3 class="text-xs font-bold text-emerald-600 mb-3">10-MINUTE BREAKS</h3>
         <div class="space-y-4">
@@ -100,7 +105,6 @@
         </div>
       </div>
 
-      <!-- 30-minute meals -->
       <div>
         <h3 class="text-xs font-bold text-amber-600 mb-3">30-MINUTE MEAL BREAKS</h3>
         <div class="space-y-4">
@@ -119,10 +123,79 @@
 </div>
 
 <script>
-// ============== ALL TIPS ==============
-const SAFETY_TIPS = ["Following distance — Maintain one second of following distance for every 10 feet of your vehicle’s length, plus extra space for speed and conditions. Space saves lives. (Smith System)","Defensive driving — Drive defensively using SAFR: Scan for hazards, Anticipate other drivers’ actions, Follow safely, and React properly. (Smith System)","Fatigue — Fatigue is as dangerous as impairment. If you feel drowsy, pull over immediately and rest. (FMCSA 49 CFR §392.3)","Distraction — Keep your eyes on the road, hands on the wheel, and mind focused on driving. Pull over safely before using any communication device. (NHTSA)","Weather — In rain, fog, snow, or strong wind, slow down, increase your following distance, and stay in full control of your vehicle. (FMCSA)","Liquid loads — Liquid loads shift easily. Reduce speed before curves and manage acceleration to prevent rollover. (FMCSA)","Backing — When backing, always use G.O.A.L. — Get Out And Look every time. Blind spots can be deadly. (FMCSA)","Vehicle inspection — Thoroughly inspect your vehicle before every trip and after every stop. A missed defect can end your day or your life. (FMCSA 49 CFR §396.13)","Complacency — Complacency on familiar routes is dangerous. Stay sharp and alert every mile. (NSC)","ERG location — Keep your Emergency Response Guidebook readily available in the cab at all times (driver’s door pocket or center console). It must be immediately accessible while driving — never in the sleeper berth. (49 CFR §172.602)","Shipping papers (BOL) — Keep your Bill of Lading and shipping papers secured in the cab within immediate reach of the driver at all times. Do not store them in the sleeper berth. (49 CFR §177.817)","ERG book — Know your Emergency Response Guidebook. Use the colored pages (yellow for ID numbers, blue for names, orange for guides, green for evacuation) to quickly identify hazards and response actions. (DOT / FMCSA)","Placarding — When carrying multiple products (e.g., 1993, 1203, 1987), correctly placard your truck. With only one holder per side, use the proper combination placard or change as needed. (FMCSA 49 CFR §172)","Bonding & grounding — Bond and ground properly before loading or unloading fuel to prevent switch loading (mixing incompatible products). Verify loads with a 3-point match every time. (FMCSA / NFPA)","Cross-dump prevention — Never deliver the wrong product into a tank. Read lids, trace the hose, point and touch before flowing, and verify out loud. Wrong drops can cost $10k–$100k+. (FMCSA / OPW)","FR clothing & PPE — Always wear fire-retardant (FR) clothing and required PPE when loading or unloading fuel. (FMCSA / NFPA)","Fire & spark awareness — While offloading, do not smoke, use cell phones, or allow open flames. If you smell anything unusual, stop immediately and say something. (FMCSA / NFPA)","Fire extinguisher — Your truck must carry a properly rated ABC fire extinguisher. Check it daily for correct pressure, intact seal, and current expiration date. (FMCSA 49 CFR §393.95)","Personal wellness — Your body is your most important cargo. Lift smart, stay hydrated, eat well, and rest adequately. (NSC)","Stop vigilance — Stay vigilant at stops and deliveries. Report suspicious activity—awareness prevents violence and threats. (FMCSA / CHP)","Professional conduct — Professional and courteous engagement builds trust. Represent the industry safely at every stop. (FMCSA)","Safety priority — Safety is always priority one. No load is worth risking your life or your family’s peace of mind. (FMCSA)","Family mindset — Drive like your family rides with you on every haul. Stay alert, prepared, and committed to zero incidents. (AAA Foundation for Traffic Safety)"];
+// ============== FULL SAFETY TIPS ==============
+const SAFETY_TIPS = [
+  "Following distance — Maintain one second of following distance for every 10 feet of your vehicle’s length, plus extra space for speed and conditions. Space saves lives. (Smith System)",
+  "Defensive driving — Drive defensively using SAFR: Scan for hazards, Anticipate other drivers’ actions, Follow safely, and React properly. (Smith System)",
+  "Fatigue — Fatigue is as dangerous as impairment. If you feel drowsy, pull over immediately and rest. (FMCSA 49 CFR §392.3)",
+  "Distraction — Keep your eyes on the road, hands on the wheel, and mind focused on driving. Pull over safely before using any communication device. (NHTSA)",
+  "Weather — In rain, fog, snow, or strong wind, slow down, increase your following distance, and stay in full control of your vehicle. (FMCSA)",
+  "Liquid loads — Liquid loads shift easily. Reduce speed before curves and manage acceleration to prevent rollover. (FMCSA)",
+  "Backing — When backing, always use G.O.A.L. — Get Out And Look every time. Blind spots can be deadly. (FMCSA)",
+  "Vehicle inspection — Thoroughly inspect your vehicle before every trip and after every stop. A missed defect can end your day or your life. (FMCSA 49 CFR §396.13)",
+  "Complacency — Complacency on familiar routes is dangerous. Stay sharp and alert every mile. (NSC)",
+  "ERG location — Keep your Emergency Response Guidebook readily available in the cab at all times (driver’s door pocket or center console). It must be immediately accessible while driving — never in the sleeper berth. (49 CFR §172.602)",
+  "Shipping papers (BOL) — Keep your Bill of Lading and shipping papers secured in the cab within immediate reach of the driver at all times. Do not store them in the sleeper berth. (49 CFR §177.817)",
+  "ERG book — Know your Emergency Response Guidebook. Use the colored pages (yellow for ID numbers, blue for names, orange for guides, green for evacuation) to quickly identify hazards and response actions. (DOT / FMCSA)",
+  "Placarding — When carrying multiple products (e.g., 1993, 1203, 1987), correctly placard your truck. With only one holder per side, use the proper combination placard or change as needed. (FMCSA 49 CFR §172)",
+  "Bonding & grounding — Bond and ground properly before loading or unloading fuel to prevent switch loading (mixing incompatible products). Verify loads with a 3-point match every time. (FMCSA / NFPA)",
+  "Cross-dump prevention — Never deliver the wrong product into a tank. Read lids, trace the hose, point and touch before flowing, and verify out loud. Wrong drops can cost $10k–$100k+. (FMCSA / OPW)",
+  "FR clothing & PPE — Always wear fire-retardant (FR) clothing and required PPE when loading or unloading fuel. (FMCSA / NFPA)",
+  "Fire & spark awareness — While offloading, do not smoke, use cell phones, or allow open flames. If you smell anything unusual, stop immediately and say something. (FMCSA / NFPA)",
+  "Fire extinguisher — Your truck must carry a properly rated ABC fire extinguisher. Check it daily for correct pressure, intact seal, and current expiration date. (FMCSA 49 CFR §393.95)",
+  "Personal wellness — Your body is your most important cargo. Lift smart, stay hydrated, eat well, and rest adequately. (NSC)",
+  "Stop vigilance — Stay vigilant at stops and deliveries. Report suspicious activity—awareness prevents violence and threats. (FMCSA / CHP)",
+  "Professional conduct — Professional and courteous engagement builds trust. Represent the industry safely at every stop. (FMCSA)",
+  "Safety priority — Safety is always priority one. No load is worth risking your life or your family’s peace of mind. (FMCSA)",
+  "Family mindset — Drive like your family rides with you on every haul. Stay alert, prepared, and committed to zero incidents. (AAA Foundation for Traffic Safety)"
+];
 
-const PRE_TRIP_TIPS = ["Cab steering wheel — Check the steering wheel play; it should be under 2 inches on a 20-inch wheel. (FMCSA 49 CFR §396.13)","Cab horn — Make sure the cab horn works properly. (FMCSA 49 CFR §396.11)","Cab wipers and washers — Check that the wipers and washers work and that the blades are in good condition. (FMCSA 49 CFR §396.11)","Cab mirrors — Make sure the cab mirrors are clean, secure, and adjusted correctly. (FMCSA 49 CFR §396.11)","Cab gauges — Verify that all cab gauges read normal and there are no warning lights. (FMCSA 49 CFR §396.13)","Cab seatbelts and emergency kit — Check the seatbelts and confirm the fire extinguisher is present and accessible. (FMCSA 49 CFR §396.11)","Cab brakes — Ensure the parking brake holds and the service brakes work without pulling. (FMCSA 49 CFR §396.11)","Cab controls — Confirm the clutch and accelerator work smoothly. (FMCSA 49 CFR §396.13)","Engine oil — Check that the engine oil level is good and there are no leaks. (FMCSA 49 CFR §396.13)","Engine coolant — Verify the engine coolant level is correct and all hoses have no leaks. (FMCSA 49 CFR §396.13)","Engine power steering — Confirm the power steering fluid level is correct and the hoses are secure. (FMCSA 49 CFR §396.13)","Engine belts — Make sure the engine belts are not cracked or loose and have proper tension. (FMCSA 49 CFR §396.13)","Engine hoses — Check that all engine hoses are secure with no cracks, bulges, or leaks. (FMCSA 49 CFR §396.13)","Engine batteries — Ensure the engine batteries are secure and have clean terminals. (FMCSA 49 CFR §396.13)","Engine air system — Verify the air compressor and lines are secure with no leaks. (FMCSA 49 CFR §396.13)","Front lights — Check that the headlights, signals, markers, and reflectors are clean and working. (FMCSA 49 CFR §396.11)","Front windshield — Inspect the windshield glass for any cracks. (FMCSA 49 CFR §396.11)","Front bumper and grille — Confirm the front bumper and grille are secure and undamaged. (FMCSA 49 CFR §396.13)","Front steering tires — Verify the front steering tires are properly inflated, have at least 4/32 inch of tread, and show no cuts. (FMCSA 49 CFR §396.11)","Front steering parts — Check that the front steering components are secure with minimal play. (FMCSA 49 CFR §396.13)","Driver fuel tank — Ensure the driver-side fuel tank is secure, has no leaks, and the cap and gasket are tight. (FMCSA 49 CFR §396.13)","Driver exhaust — Confirm the driver-side exhaust is secure, has good clearance, and shows no leaks. (FMCSA 49 CFR §396.13)","Driver frame — Inspect the driver-side frame rails for any cracks. (FMCSA 49 CFR §396.13)","Driver tires — Check that the driver-side tires have a minimum of 2/32 inch tread and all lug nuts are tight. (FMCSA 49 CFR §396.11)","Driver suspension — Verify the driver-side suspension springs and air bags have no damage and maintain even height. (FMCSA 49 CFR §396.13)","Driver air brakes — Ensure the driver-side air brake lines and chambers are secure with no leaks. (FMCSA 49 CFR §396.11)","Driver side lights — Confirm the driver-side marker lights, reflectors, and reflective tape are intact. (FMCSA 49 CFR §396.11)","Rear fifth wheel — Check that the rear fifth wheel kingpin is secure, lubricated, and properly locked. (FMCSA 49 CFR §396.11)","Rear lights — Verify the taillights and brake signals are working. (FMCSA 49 CFR §396.11)","Rear mud flaps — Ensure the rear mud flaps are secure and not torn. (FMCSA 49 CFR §396.13)","Rear drive tires and suspension — Inspect the rear drive tires and suspension (same checks as the driver side). (FMCSA 49 CFR §396.11)","Passenger side — Confirm the passenger-side mirrors, fuel tank, exhaust, and frame are intact. (FMCSA 49 CFR §396.13)","Undercarriage — Check the undercarriage driveline, u-joints, and differential for security and no leaks. (FMCSA 49 CFR §396.13)","Undercarriage brakes — Inspect the undercarriage brake drums and rotors for cracks, grease, or wear. (FMCSA 49 CFR §396.11)","Undercarriage air brakes — Verify the undercarriage air brakes build pressure correctly with no leaks and proper pushrod travel. (FMCSA 49 CFR §396.11)","Tank manhole and valves — Ensure the tank manhole vents, fittings, and gaskets are secure with no leaks. (FMCSA 49 CFR §396.13)","Tank emergency shutoff — Confirm the tank emergency shutoff switch works properly. (FMCSA 49 CFR §396.13)","Tank placards — Check that the tank placards are correct for the current load. (FMCSA 49 CFR §396.13)","Tank labels — Verify the tank spec plate and retest dates are current and easy to read. (FMCSA 49 CFR §396.13)","Tank safety gear — Make sure grounding, bonding, the spill kit, and all required PPE are available. (FMCSA 49 CFR §396.13)","Tank catwalk and fenders — Inspect the tank catwalk and fenders to ensure they are clear, safe, and undamaged. (FMCSA 49 CFR §396.13)","Overall vehicle — Perform a final check under the vehicle for any fluid leaks, loose parts, or damage. (FMCSA 49 CFR §396.13)","Cab documents — Confirm the shipping papers and hazmat documents are current and easily accessible. (FMCSA 49 CFR §396.13)","Trailer brakes and lights — Verify the trailer brakes and lights are properly connected and tested — all must be working. (FMCSA 49 CFR §396.11)"];
+const PRE_TRIP_TIPS = [
+  "Cab steering wheel — Check the steering wheel play; it should be under 2 inches on a 20-inch wheel. (FMCSA 49 CFR §396.13)",
+  "Cab horn — Make sure the cab horn works properly. (FMCSA 49 CFR §396.11)",
+  "Cab wipers and washers — Check that the wipers and washers work and that the blades are in good condition. (FMCSA 49 CFR §396.11)",
+  "Cab mirrors — Make sure the cab mirrors are clean, secure, and adjusted correctly. (FMCSA 49 CFR §396.11)",
+  "Cab gauges — Verify that all cab gauges read normal and there are no warning lights. (FMCSA 49 CFR §396.13)",
+  "Cab seatbelts and emergency kit — Check the seatbelts and confirm the fire extinguisher is present and accessible. (FMCSA 49 CFR §396.11)",
+  "Cab brakes — Ensure the parking brake holds and the service brakes work without pulling. (FMCSA 49 CFR §396.11)",
+  "Cab controls — Confirm the clutch and accelerator work smoothly. (FMCSA 49 CFR §396.13)",
+  "Engine oil — Check that the engine oil level is good and there are no leaks. (FMCSA 49 CFR §396.13)",
+  "Engine coolant — Verify the engine coolant level is correct and all hoses have no leaks. (FMCSA 49 CFR §396.13)",
+  "Engine power steering — Confirm the power steering fluid level is correct and the hoses are secure. (FMCSA 49 CFR §396.13)",
+  "Engine belts — Make sure the engine belts are not cracked or loose and have proper tension. (FMCSA 49 CFR §396.13)",
+  "Engine hoses — Check that all engine hoses are secure with no cracks, bulges, or leaks. (FMCSA 49 CFR §396.13)",
+  "Engine batteries — Ensure the engine batteries are secure and have clean terminals. (FMCSA 49 CFR §396.13)",
+  "Engine air system — Verify the air compressor and lines are secure with no leaks. (FMCSA 49 CFR §396.13)",
+  "Front lights — Check that the headlights, signals, markers, and reflectors are clean and working. (FMCSA 49 CFR §396.11)",
+  "Front windshield — Inspect the windshield glass for any cracks. (FMCSA 49 CFR §396.11)",
+  "Front bumper and grille — Confirm the front bumper and grille are secure and undamaged. (FMCSA 49 CFR §396.13)",
+  "Front steering tires — Verify the front steering tires are properly inflated, have at least 4/32 inch of tread, and show no cuts. (FMCSA 49 CFR §396.11)",
+  "Front steering parts — Check that the front steering components are secure with minimal play. (FMCSA 49 CFR §396.13)",
+  "Driver fuel tank — Ensure the driver-side fuel tank is secure, has no leaks, and the cap and gasket are tight. (FMCSA 49 CFR §396.13)",
+  "Driver exhaust — Confirm the driver-side exhaust is secure, has good clearance, and shows no leaks. (FMCSA 49 CFR §396.13)",
+  "Driver frame — Inspect the driver-side frame rails for any cracks. (FMCSA 49 CFR §396.13)",
+  "Driver tires — Check that the driver-side tires have a minimum of 2/32 inch tread and all lug nuts are tight. (FMCSA 49 CFR §396.11)",
+  "Driver suspension — Verify the driver-side suspension springs and air bags have no damage and maintain even height. (FMCSA 49 CFR §396.13)",
+  "Driver air brakes — Ensure the driver-side air brake lines and chambers are secure with no leaks. (FMCSA 49 CFR §396.11)",
+  "Driver side lights — Confirm the driver-side marker lights, reflectors, and reflective tape are intact. (FMCSA 49 CFR §396.11)",
+  "Rear fifth wheel — Check that the rear fifth wheel kingpin is secure, lubricated, and properly locked. (FMCSA 49 CFR §396.11)",
+  "Rear lights — Verify the taillights and brake signals are working. (FMCSA 49 CFR §396.11)",
+  "Rear mud flaps — Ensure the rear mud flaps are secure and not torn. (FMCSA 49 CFR §396.13)",
+  "Rear drive tires and suspension — Inspect the rear drive tires and suspension (same checks as the driver side). (FMCSA 49 CFR §396.11)",
+  "Passenger side — Confirm the passenger-side mirrors, fuel tank, exhaust, and frame are intact. (FMCSA 49 CFR §396.13)",
+  "Undercarriage — Check the undercarriage driveline, u-joints, and differential for security and no leaks. (FMCSA 49 CFR §396.13)",
+  "Undercarriage brakes — Inspect the undercarriage brake drums and rotors for cracks, grease, or wear. (FMCSA 49 CFR §396.11)",
+  "Undercarriage air brakes — Verify the undercarriage air brakes build pressure correctly with no leaks and proper pushrod travel. (FMCSA 49 CFR §396.11)",
+  "Tank manhole and valves — Ensure the tank manhole vents, fittings, and gaskets are secure with no leaks. (FMCSA 49 CFR §396.13)",
+  "Tank emergency shutoff — Confirm the tank emergency shutoff switch works properly. (FMCSA 49 CFR §396.13)",
+  "Tank placards — Check that the tank placards are correct for the current load. (FMCSA 49 CFR §396.13)",
+  "Tank labels — Verify the tank spec plate and retest dates are current and easy to read. (FMCSA 49 CFR §396.13)",
+  "Tank safety gear — Make sure grounding, bonding, the spill kit, and all required PPE are available. (FMCSA 49 CFR §396.13)",
+  "Tank catwalk and fenders — Inspect the tank catwalk and fenders to ensure they are clear, safe, and undamaged. (FMCSA 49 CFR §396.13)",
+  "Overall vehicle — Perform a final check under the vehicle for any fluid leaks, loose parts, or damage. (FMCSA 49 CFR §396.13)",
+  "Cab documents — Confirm the shipping papers and hazmat documents are current and easily accessible. (FMCSA 49 CFR §396.13)",
+  "Trailer brakes and lights — Verify the trailer brakes and lights are properly connected and tested — all must be working. (FMCSA 49 CFR §396.11)"
+];
 
 let currentClockTime = "";
 let currentDate = "";
@@ -246,7 +319,7 @@ function selectForm(form) {
   selectedForm = form;
 }
 
-// ============== DEBUG PDF GENERATOR – Individual per-break control ==============
+// ============== DEBUG PDF GENERATOR ==============
 async function generateDebugPDF() {
   const truck = document.getElementById('truckNum').value.trim() || "—";
   const trailer = document.getElementById('trailerNum').value.trim() || "—";
@@ -258,35 +331,35 @@ async function generateDebugPDF() {
   const page = pdfDoc.getPages()[0];
   const { height } = page.getSize();
 
-  // Header fields (your tuned values)
+  // Header fields
   page.drawText(currentClockTime, { x: parseFloat(document.getElementById('dbgClockX').value)||380, y: height - (parseFloat(document.getElementById('dbgClockY').value)||95), size: parseFloat(document.getElementById('dbgClockSize').value)||8 });
   page.drawText(currentDate, { x: parseFloat(document.getElementById('dbgDateX').value)||480, y: height - (parseFloat(document.getElementById('dbgDateY').value)||95), size: parseFloat(document.getElementById('dbgDateSize').value)||8 });
   page.drawText(truck, { x: parseFloat(document.getElementById('dbgTruckX').value)||180, y: height - (parseFloat(document.getElementById('dbgTruckY').value)||135), size: parseFloat(document.getElementById('dbgTruckSize').value)||9 });
   page.drawText(trailer, { x: parseFloat(document.getElementById('dbgTrailerX').value)||280, y: height - (parseFloat(document.getElementById('dbgTrailerY').value)||135), size: parseFloat(document.getElementById('dbgTrailerSize').value)||9 });
   page.drawText(mileage, { x: parseFloat(document.getElementById('dbgMileageX').value)||420, y: height - (parseFloat(document.getElementById('dbgMileageY').value)||135), size: parseFloat(document.getElementById('dbgMileageSize').value)||9 });
 
-  // 10-minute breaks – individual
-  const ten = [
-    {afterX: parseFloat(document.getElementById('dbgTen1AfterX').value)||80, beforeX: parseFloat(document.getElementById('dbgTen1BeforeX').value)||220, y: parseFloat(document.getElementById('dbgTen1Y').value)||220},
-    {afterX: parseFloat(document.getElementById('dbgTen2AfterX').value)||80, beforeX: parseFloat(document.getElementById('dbgTen2BeforeX').value)||220, y: parseFloat(document.getElementById('dbgTen2Y').value)||250},
-    {afterX: parseFloat(document.getElementById('dbgTen3AfterX').value)||80, beforeX: parseFloat(document.getElementById('dbgTen3BeforeX').value)||220, y: parseFloat(document.getElementById('dbgTen3Y').value)||280},
-    {afterX: parseFloat(document.getElementById('dbgTen4AfterX').value)||80, beforeX: parseFloat(document.getElementById('dbgTen4BeforeX').value)||220, y: parseFloat(document.getElementById('dbgTen4Y').value)||310}
-  ];
-  currentTenBreaks.forEach((b, i) => {
-    const pos = ten[i];
-    page.drawText(b.afterClean, { x: pos.afterX, y: height - pos.y, size: 7 });
-    page.drawText(b.beforeClean, { x: pos.beforeX, y: height - pos.y, size: 7 });
+  const breakSize = parseFloat(document.getElementById('dbgBreakSize').value) || 7;
+
+  // 10-minute breaks
+  let y = height - (parseFloat(document.getElementById('dbgTenY').value) || 220);
+  const tenSpacing = parseFloat(document.getElementById('dbgTenSpacing').value) || 18;
+  const tenAfterX = parseFloat(document.getElementById('dbgTenAfterX').value) || 80;
+  const tenBeforeX = parseFloat(document.getElementById('dbgTenBeforeX').value) || 220;
+  currentTenBreaks.forEach(b => {
+    page.drawText(b.afterClean, { x: tenAfterX, y: y, size: breakSize });
+    page.drawText(b.beforeClean, { x: tenBeforeX, y: y, size: breakSize });
+    y -= tenSpacing;
   });
 
-  // 30-minute meals – individual
-  const meal = [
-    {afterX: parseFloat(document.getElementById('dbgMeal1AfterX').value)||80, beforeX: parseFloat(document.getElementById('dbgMeal1BeforeX').value)||220, y: parseFloat(document.getElementById('dbgMeal1Y').value)||350},
-    {afterX: parseFloat(document.getElementById('dbgMeal2AfterX').value)||80, beforeX: parseFloat(document.getElementById('dbgMeal2BeforeX').value)||220, y: parseFloat(document.getElementById('dbgMeal2Y').value)||380}
-  ];
-  currentMeals.forEach((b, i) => {
-    const pos = meal[i];
-    page.drawText(b.afterClean, { x: pos.afterX, y: height - pos.y, size: 7 });
-    page.drawText(b.beforeClean, { x: pos.beforeX, y: height - pos.y, size: 7 });
+  // 30-minute meal breaks
+  y = height - (parseFloat(document.getElementById('dbgMealY').value) || 320);
+  const mealSpacing = parseFloat(document.getElementById('dbgMealSpacing').value) || 18;
+  const mealAfterX = parseFloat(document.getElementById('dbgMealAfterX').value) || 80;
+  const mealBeforeX = parseFloat(document.getElementById('dbgMealBeforeX').value) || 220;
+  currentMeals.forEach(b => {
+    page.drawText(b.afterClean, { x: mealAfterX, y: y, size: breakSize });
+    page.drawText(b.beforeClean, { x: mealBeforeX, y: y, size: breakSize });
+    y -= mealSpacing;
   });
 
   const finalPdfBytes = await pdfDoc.save();
@@ -299,22 +372,15 @@ async function generateDebugPDF() {
 }
 
 function resetDebugToDefault() {
-  // Reset break positions only
-  document.getElementById('dbgTen1Y').value = 220;
-  document.getElementById('dbgTen2Y').value = 250;
-  document.getElementById('dbgTen3Y').value = 280;
-  document.getElementById('dbgTen4Y').value = 310;
-  document.getElementById('dbgMeal1Y').value = 350;
-  document.getElementById('dbgMeal2Y').value = 380;
-  // X values
-  for (let i = 1; i <= 4; i++) {
-    document.getElementById(`dbgTen${i}AfterX`).value = 80;
-    document.getElementById(`dbgTen${i}BeforeX`).value = 220;
-  }
-  for (let i = 1; i <= 2; i++) {
-    document.getElementById(`dbgMeal${i}AfterX`).value = 80;
-    document.getElementById(`dbgMeal${i}BeforeX`).value = 220;
-  }
+  document.getElementById('dbgTenY').value = 220;
+  document.getElementById('dbgTenSpacing').value = 18;
+  document.getElementById('dbgTenAfterX').value = 80;
+  document.getElementById('dbgTenBeforeX').value = 220;
+  document.getElementById('dbgMealY').value = 320;
+  document.getElementById('dbgMealSpacing').value = 18;
+  document.getElementById('dbgMealAfterX').value = 80;
+  document.getElementById('dbgMealBeforeX').value = 220;
+  document.getElementById('dbgBreakSize').value = 7;
 }
 
 // ============== YOUR TWO BASE64 STRINGS ( ALREADY PASTED / DO NOT TOUCH BELOW THIS LINE) ==============
