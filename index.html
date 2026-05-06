@@ -20,7 +20,7 @@
 
 <div class="max-w-2xl mx-auto px-4">
 
-  <!-- === ORIGINAL BREAK CALCULATOR === -->
+  <!-- Clock In -->
   <div class="card rounded-3xl shadow-md p-5 sm:p-6 mb-8">
     <label class="block uppercase text-blue-600 text-sm font-bold tracking-widest mb-3">CLOCK IN TIME</label>
     <div class="flex flex-col sm:flex-row items-center sm:items-end gap-6 w-full">
@@ -36,25 +36,24 @@
     </button>
   </div>
 
-  <!-- 10 Min Breaks -->
+  <!-- 10-Min Breaks -->
   <div class="mb-8">
     <h2 class="uppercase text-xs font-bold mb-4 px-1" style="color: #FFD31F;">10-Minute Breaks</h2>
     <div id="tenMinBreaks" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
   </div>
 
-  <!-- 30 Min Meals -->
+  <!-- 30-Min Meals -->
   <div class="mb-8">
     <h2 class="uppercase text-xs font-bold mb-4 px-1" style="color: #FFD31F;">30-Minute Meal Breaks</h2>
     <div id="mealBreaks" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
   </div>
 
-  <!-- Tips -->
+  <!-- Interactive Tips -->
   <div id="tipsSection" class="space-y-6"></div>
 
-  <!-- === OPTIONAL LOAD TRACKER FORM === -->
+  <!-- Optional Load Tracker -->
   <div class="card rounded-3xl shadow-md p-6 mt-12">
     <h2 class="uppercase text-xs font-bold text-amber-600 tracking-widest mb-4">GENERATE OPTIONAL LOAD TRACKER FORM</h2>
-    
     <div class="grid grid-cols-2 gap-4 mb-6">
       <button onclick="selectForm('Semi')" id="btnSemi" class="form-select-btn active flex flex-col items-center py-4 border-2 border-emerald-600 rounded-2xl hover:bg-emerald-50">
         <i class="fas fa-truck text-3xl text-emerald-600 mb-2"></i>
@@ -65,32 +64,20 @@
         <span class="font-bold">T&amp;T</span>
       </button>
     </div>
-
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-      <div>
-        <label class="block text-xs font-bold text-gray-500 mb-1">TRUCK #</label>
-        <input id="truckNum" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-200">
-      </div>
-      <div>
-        <label class="block text-xs font-bold text-gray-500 mb-1">TRAILER #</label>
-        <input id="trailerNum" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-200">
-      </div>
-      <div>
-        <label class="block text-xs font-bold text-gray-500 mb-1">START MILEAGE</label>
-        <input id="startMileage" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-200">
-      </div>
+      <div><label class="block text-xs font-bold text-gray-500 mb-1">TRUCK #</label><input id="truckNum" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-200"></div>
+      <div><label class="block text-xs font-bold text-gray-500 mb-1">TRAILER #</label><input id="trailerNum" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-200"></div>
+      <div><label class="block text-xs font-bold text-gray-500 mb-1">START MILEAGE</label><input id="startMileage" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-200"></div>
     </div>
-
     <button onclick="generateLoadTrackerPDF()" class="w-full flex items-center justify-center gap-3 font-bold py-4 rounded-2xl text-lg" style="background-color:#FFD31F; color:#111827;">
-      <i class="fas fa-file-pdf"></i>
-      Print Tracker
+      <i class="fas fa-file-pdf"></i> Print Tracker
     </button>
   </div>
 
 </div>
 
 <script>
-// ============== REFINED SAFETY TIPS (23 tips) ==============
+// ============== SAFETY TIPS (23 refined tips) ==============
 const SAFETY_TIPS = [
   "Following distance — Maintain one second of following distance for every 10 feet of your vehicle’s length, plus extra space for speed and conditions. Space saves lives. (Smith System)",
   "Defensive driving — Drive defensively using SAFR: Scan for hazards, Anticipate other drivers’ actions, Follow safely, and React properly. (Smith System)",
@@ -117,8 +104,52 @@ const SAFETY_TIPS = [
   "Family mindset — Drive like your family rides with you on every haul. Stay alert, prepared, and committed to zero incidents. (AAA Foundation for Traffic Safety)"
 ];
 
-// Pre-Trip Tips remain unchanged (with references)
-const PRE_TRIP_TIPS = [ /* your full pre-trip list with references from previous version */ ];
+const PRE_TRIP_TIPS = [
+  "Cab steering wheel — Check the steering wheel play; it should be under 2 inches on a 20-inch wheel. (FMCSA 49 CFR §396.13)",
+  "Cab horn — Make sure the cab horn works properly. (FMCSA 49 CFR §396.11)",
+  "Cab wipers and washers — Check that the wipers and washers work and that the blades are in good condition. (FMCSA 49 CFR §396.11)",
+  "Cab mirrors — Make sure the cab mirrors are clean, secure, and adjusted correctly. (FMCSA 49 CFR §396.11)",
+  "Cab gauges — Verify that all cab gauges read normal and there are no warning lights. (FMCSA 49 CFR §396.13)",
+  "Cab seatbelts and emergency kit — Check the seatbelts and confirm the fire extinguisher is present and accessible. (FMCSA 49 CFR §396.11)",
+  "Cab brakes — Ensure the parking brake holds and the service brakes work without pulling. (FMCSA 49 CFR §396.11)",
+  "Cab controls — Confirm the clutch and accelerator work smoothly. (FMCSA 49 CFR §396.13)",
+  "Engine oil — Check that the engine oil level is good and there are no leaks. (FMCSA 49 CFR §396.13)",
+  "Engine coolant — Verify the engine coolant level is correct and all hoses have no leaks. (FMCSA 49 CFR §396.13)",
+  "Engine power steering — Confirm the power steering fluid level is correct and the hoses are secure. (FMCSA 49 CFR §396.13)",
+  "Engine belts — Make sure the engine belts are not cracked or loose and have proper tension. (FMCSA 49 CFR §396.13)",
+  "Engine hoses — Check that all engine hoses are secure with no cracks, bulges, or leaks. (FMCSA 49 CFR §396.13)",
+  "Engine batteries — Ensure the engine batteries are secure and have clean terminals. (FMCSA 49 CFR §396.13)",
+  "Engine air system — Verify the air compressor and lines are secure with no leaks. (FMCSA 49 CFR §396.13)",
+  "Front lights — Check that the headlights, signals, markers, and reflectors are clean and working. (FMCSA 49 CFR §396.11)",
+  "Front windshield — Inspect the windshield glass for any cracks. (FMCSA 49 CFR §396.11)",
+  "Front bumper and grille — Confirm the front bumper and grille are secure and undamaged. (FMCSA 49 CFR §396.13)",
+  "Front steering tires — Verify the front steering tires are properly inflated, have at least 4/32 inch of tread, and show no cuts. (FMCSA 49 CFR §396.11)",
+  "Front steering parts — Check that the front steering components are secure with minimal play. (FMCSA 49 CFR §396.13)",
+  "Driver fuel tank — Ensure the driver-side fuel tank is secure, has no leaks, and the cap and gasket are tight. (FMCSA 49 CFR §396.13)",
+  "Driver exhaust — Confirm the driver-side exhaust is secure, has good clearance, and shows no leaks. (FMCSA 49 CFR §396.13)",
+  "Driver frame — Inspect the driver-side frame rails for any cracks. (FMCSA 49 CFR §396.13)",
+  "Driver tires — Check that the driver-side tires have a minimum of 2/32 inch tread and all lug nuts are tight. (FMCSA 49 CFR §396.11)",
+  "Driver suspension — Verify the driver-side suspension springs and air bags have no damage and maintain even height. (FMCSA 49 CFR §396.13)",
+  "Driver air brakes — Ensure the driver-side air brake lines and chambers are secure with no leaks. (FMCSA 49 CFR §396.11)",
+  "Driver side lights — Confirm the driver-side marker lights, reflectors, and reflective tape are intact. (FMCSA 49 CFR §396.11)",
+  "Rear fifth wheel — Check that the rear fifth wheel kingpin is secure, lubricated, and properly locked. (FMCSA 49 CFR §396.11)",
+  "Rear lights — Verify the taillights and brake signals are working. (FMCSA 49 CFR §396.11)",
+  "Rear mud flaps — Ensure the rear mud flaps are secure and not torn. (FMCSA 49 CFR §396.13)",
+  "Rear drive tires and suspension — Inspect the rear drive tires and suspension (same checks as the driver side). (FMCSA 49 CFR §396.11)",
+  "Passenger side — Confirm the passenger-side mirrors, fuel tank, exhaust, and frame are intact. (FMCSA 49 CFR §396.13)",
+  "Undercarriage — Check the undercarriage driveline, u-joints, and differential for security and no leaks. (FMCSA 49 CFR §396.13)",
+  "Undercarriage brakes — Inspect the undercarriage brake drums and rotors for cracks, grease, or wear. (FMCSA 49 CFR §396.11)",
+  "Undercarriage air brakes — Verify the undercarriage air brakes build pressure correctly with no leaks and proper pushrod travel. (FMCSA 49 CFR §396.11)",
+  "Tank manhole and valves — Ensure the tank manhole vents, fittings, and gaskets are secure with no leaks. (FMCSA 49 CFR §396.13)",
+  "Tank emergency shutoff — Confirm the tank emergency shutoff switch works properly. (FMCSA 49 CFR §396.13)",
+  "Tank placards — Check that the tank placards are correct for the current load. (FMCSA 49 CFR §396.13)",
+  "Tank labels — Verify the tank spec plate and retest dates are current and easy to read. (FMCSA 49 CFR §396.13)",
+  "Tank safety gear — Make sure grounding, bonding, the spill kit, and all required PPE are available. (FMCSA 49 CFR §396.13)",
+  "Tank catwalk and fenders — Inspect the tank catwalk and fenders to ensure they are clear, safe, and undamaged. (FMCSA 49 CFR §396.13)",
+  "Overall vehicle — Perform a final check under the vehicle for any fluid leaks, loose parts, or damage. (FMCSA 49 CFR §396.13)",
+  "Cab documents — Confirm the shipping papers and hazmat documents are current and easily accessible. (FMCSA 49 CFR §396.13)",
+  "Trailer brakes and lights — Verify the trailer brakes and lights are properly connected and tested — all must be working. (FMCSA 49 CFR §396.11)"
+];
 
 let currentClockTime = "";
 let currentDate = "";
@@ -141,22 +172,85 @@ function randomPreTrip() {
   return PRE_TRIP_TIPS[index];
 }
 
-// Rest of the script (calculateBreaks, resetToNow, PDF generator, etc.) remains exactly as before
-// ... [full original script logic from previous working version] ...
+function formatTime(date) {
+  let h = date.getHours(); let m = date.getMinutes();
+  const ampm = h >= 12 ? "PM" : "AM";
+  h = h % 12 || 12;
+  return `${h}:${m.toString().padStart(2,'0')} ${ampm}`;
+}
 
-// Updated tipsHTML with clickable cards
+function addMinutes(date, mins) {
+  return new Date(date.getTime() + mins * 60000);
+}
+
+function formatWithDay(base, result) {
+  const diff = Math.round((result - base) / 86400000);
+  const time = formatTime(result);
+  return diff === 1 ? `${time} (next day)` : time;
+}
+
+function createCard(label, duration, after, before, icon) {
+  return `<div class="card rounded-3xl shadow p-6">
+    <div class="flex items-center gap-3 mb-4">
+      <i class="${icon} text-2xl text-blue-600"></i>
+      <div class="font-bold text-lg">${label} <span class="text-black">(${duration})</span></div>
+    </div>
+    <div class="space-y-3 text-sm">
+      <div><span class="font-semibold text-emerald-600">START AFTER:</span> <span class="font-medium">${after}</span></div>
+      <div><span class="font-semibold text-amber-600">START BEFORE:</span> <span class="font-medium">${before}</span></div>
+    </div>
+  </div>`;
+}
+
 function calculateBreaks() {
-  // ... (all existing break calculation code) ...
+  const timeInput = document.getElementById('clockIn').value;
+  if (!timeInput) return;
+  const [hours, minutes] = timeInput.split(':').map(Number);
+  const base = new Date();
+  base.setHours(hours, minutes, 0, 0);
 
+  const ampm = hours >= 12 ? "PM" : "AM";
+  const h12 = hours % 12 || 12;
+  currentClockTime = `${h12}:${minutes.toString().padStart(2,'0')} ${ampm}`;
+  document.getElementById('displayTime').textContent = currentClockTime;
+
+  const today = new Date();
+  const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  currentDate = today.toLocaleDateString('en-US', dateOptions);
+  document.getElementById('displayDate').textContent = currentDate;
+
+  const tenDefs = [{label:"Break #1", after:1, before:239},{label:"Break #2", after:241, before:479},{label:"Break #3", after:481, before:719},{label:"Break #4", after:721, before:959}];
+  currentTenBreaks = [];
+  let html10 = '';
+  tenDefs.forEach(d => {
+    const afterTime = formatWithDay(base, addMinutes(base, d.after));
+    const beforeTime = formatWithDay(base, addMinutes(base, d.before));
+    currentTenBreaks.push({label:d.label, duration:"10 MIN", after:afterTime, before:beforeTime, afterClean:afterTime.replace(' (next day)',''), beforeClean:beforeTime.replace(' (next day)','')});
+    html10 += createCard(d.label, "10 MIN", afterTime, beforeTime, "fas fa-clock");
+  });
+  document.getElementById('tenMinBreaks').innerHTML = html10;
+
+  const mealDefs = [{label:"Meal #1", after:211, before:359},{label:"Meal #2", after:631, before:779}];
+  currentMeals = [];
+  let htmlMeal = '';
+  mealDefs.forEach(d => {
+    const afterTime = formatWithDay(base, addMinutes(base, d.after));
+    const beforeTime = formatWithDay(base, addMinutes(base, d.before));
+    currentMeals.push({label:d.label, duration:"30 MIN", after:afterTime, before:beforeTime, afterClean:afterTime.replace(' (next day)',''), beforeClean:beforeTime.replace(' (next day)','')});
+    htmlMeal += createCard(d.label, "30 MIN", afterTime, beforeTime, "fas fa-utensils");
+  });
+  document.getElementById('mealBreaks').innerHTML = htmlMeal;
+
+  // Interactive tip cards
   const tipsHTML = `
-    <div onclick="refreshSafetyTip()" class="card rounded-3xl p-6 cursor-pointer">
+    <div onclick="refreshSafetyTip()" class="card rounded-3xl p-6">
       <div class="flex items-center gap-3 mb-3">
         <i class="fas fa-shield-alt text-2xl text-emerald-600"></i>
         <h3 class="font-bold text-emerald-700">Safety Tip of the Day</h3>
       </div>
       <p id="safetyTipText" class="text-gray-800">${randomTip()}</p>
     </div>
-    <div onclick="refreshPreTripTip()" class="card rounded-3xl p-6 cursor-pointer">
+    <div onclick="refreshPreTripTip()" class="card rounded-3xl p-6">
       <div class="flex items-center gap-3 mb-3">
         <i class="fas fa-clipboard-check text-2xl text-amber-600"></i>
         <h3 class="font-bold text-amber-700">Pre-Trip Tip of the Day</h3>
@@ -166,13 +260,65 @@ function calculateBreaks() {
   document.getElementById('tipsSection').innerHTML = tipsHTML;
 }
 
-// New refresh functions for clickable cards
 function refreshSafetyTip() {
   document.getElementById('safetyTipText').textContent = randomTip();
 }
 
 function refreshPreTripTip() {
   document.getElementById('preTripTipText').textContent = randomPreTrip();
+}
+
+function resetToNow() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2, '0');
+  const m = String(now.getMinutes()).padStart(2, '0');
+  document.getElementById('clockIn').value = `${h}:${m}`;
+  calculateBreaks();
+}
+
+// ============== LOAD TRACKER PDF GENERATOR ==============
+let selectedForm = "Semi";
+
+function selectForm(form) {
+  document.getElementById('btnSemi').classList.remove('active');
+  document.getElementById('btnTandT').classList.remove('active');
+  if (form === 'Semi') document.getElementById('btnSemi').classList.add('active');
+  else document.getElementById('btnTandT').classList.add('active');
+  selectedForm = form;
+}
+
+async function generateLoadTrackerPDF() {
+  const truck = document.getElementById('truckNum').value.trim() || "—";
+  const trailer = document.getElementById('trailerNum').value.trim() || "—";
+  const mileage = document.getElementById('startMileage').value.trim() || "—";
+
+  const base64 = selectedForm === "Semi" ? SEMI_PDF_BASE64 : TANDT_PDF_BASE64;
+  const pdfBytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+  
+  const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
+  const page = pdfDoc.getPages()[0];
+  const { height } = page.getSize();
+
+  page.drawText(currentClockTime, { x: 380, y: height - 95, size: 8 });
+  page.drawText(currentDate, { x: 480, y: height - 95, size: 8 });
+  page.drawText(truck, { x: 180, y: height - 135, size: 9 });
+  page.drawText(trailer, { x: 280, y: height - 135, size: 9 });
+  page.drawText(mileage, { x: 420, y: height - 135, size: 9 });
+
+  let y = height - 220;
+  currentTenBreaks.forEach(b => {
+    page.drawText(b.afterClean, { x: 80, y: y, size: 7 });
+    page.drawText(b.beforeClean, { x: 220, y: y, size: 7 });
+    y -= 14;
+  });
+
+  const finalPdfBytes = await pdfDoc.save();
+  const blob = new Blob([finalPdfBytes], { type: 'application/pdf' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Safety_Ninja_${selectedForm}_Load_Tracker.pdf`;
+  a.click();
 }
 
 // ============== YOUR TWO BASE64 STRINGS ( ALREADY PASTED / DO NOT TOUCH BELOW THIS LINE) ==============
