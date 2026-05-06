@@ -5,11 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Safety Ninja Break Time Calculator</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     body { font-family: system-ui, -apple-system, sans-serif; background: #111827; color: white; }
     .card { transition: all 0.2s; background: #FEFEFE; color: #111827; }
     .card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2); }
+    .form-select-btn.active { border-color: #10b981 !important; background-color: #ecfdf5; }
   </style>
 </head>
 <body class="py-6">
@@ -48,11 +50,10 @@
   <!-- Tips -->
   <div id="tipsSection" class="space-y-6"></div>
 
-  <!-- === NEW: Load Tracker Form Generator === -->
+  <!-- Load Tracker Form Generator -->
   <div class="card rounded-3xl shadow-md p-6 mt-12 border border-amber-200">
     <h2 class="uppercase text-xs font-bold text-amber-600 tracking-widest mb-4">Generate Load Tracker PDF</h2>
     
-    <!-- Form Selection -->
     <div class="grid grid-cols-2 gap-4 mb-6">
       <button onclick="selectForm('Semi')" id="btnSemi" class="form-select-btn active flex flex-col items-center py-4 border-2 border-emerald-600 rounded-2xl hover:bg-emerald-50">
         <i class="fas fa-truck text-3xl text-emerald-600 mb-2"></i>
@@ -64,7 +65,6 @@
       </button>
     </div>
 
-    <!-- Driver Inputs -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
       <div>
         <label class="block text-xs font-bold text-gray-500 mb-1">TRUCK #</label>
@@ -90,15 +90,19 @@
 </div>
 
 <script>
-// ============== BREAK CALCULATOR LOGIC ==============
-const SAFETY_TIPS = [ /* same as before */ ];
-const PRE_TRIP_TIPS = [ /* same as before */ ];
+// ============== FULL ARRAYS ==============
+const SAFETY_TIPS = ["Maintain safe following distance: one second per 10 feet of vehicle length plus extra for speed and conditions. Space saves lives.","Drive defensively with SAFR: Scan hazards, Anticipate actions, Follow safely, React properly—stay one step ahead.","Fatigue is as dangerous as impairment. When drowsy, pull over and rest. Arrive alive, not just on time.","Eyes on the road, hands on the wheel, mind on driving. One distraction can change everything—pull over to communicate.","In rain, fog, snow, or wind: slow down, increase distance, stay in control. Better late than never home.","Liquid loads shift easily. Slow in curves, manage speed—prevent rollover and keep your rig upright.","When backing, use G.O.A.L.—Get Out And Look every time. Blind spots kill; caution saves.","Inspect thoroughly before you roll and after you stop. A missed defect can end your day or your life.","Complacency creeps in on familiar routes. Stay sharp every mile—routine is the silent killer.","Know your Emergency Response Guidebook. In any incident, consult it first to protect yourself and others.","Bond and ground properly, verify loads with 3-point match every time. Prevent sparks and incompatible mixes.","Hot conditions? Hydrate often, take breaks, watch for heat illness signs—your body works as hard as your truck.","Know your fire extinguisher—PASS: Pull, Aim, Squeeze, Sweep. Be ready before fire spreads.","Stay calm at the scene, secure the area, report accurately. Every incident is a lesson for safer driving.","Your body is your most important cargo. Lift smart, eat right, rest well—wellness keeps you rolling.","Watch your step around equipment and yards. Use three points of contact on ladders—one slip can sideline you.","Stay vigilant at stops and deliveries. Report suspicious activity—awareness prevents violence and threats.","Professional and courteous engagement builds trust. Represent the industry safely at every stop.","Safety is always priority one. No load is worth risking your life or your family's peace of mind.","Drive like your family rides with you on every haul. Stay alert, prepared, and committed to zero incidents."];
 
+const PRE_TRIP_TIPS = ["Cab steering wheel: Check play is under 2 inches on a 20-inch wheel","Cab horn: Make sure it works properly","Cab wipers and washers: Check they work and blades are good","Cab mirrors: Clean, secure, and adjusted correctly","Cab gauges: All read normal with no warning lights","Cab seatbelts and emergency kit: Check seatbelts and make sure fire extinguisher is present","Cab brakes: Parking brake holds and service brakes work with no pulling","Cab controls: Clutch and accelerator work smoothly","Engine oil: Level is good with no leaks","Engine coolant: Level is correct and hoses have no leaks","Engine power steering: Fluid level correct and hoses secure","Engine belts: Not cracked or loose with good tension","Engine hoses: Secure with no cracks, bulges, or leaks","Engine batteries: Secure with clean terminals","Engine air system: Compressor and lines secure with no leaks","Front lights: Headlights, signals, markers, and reflectors clean and working","Front windshield: Glass has no cracks","Front bumper and grille: Secure with no damage","Front steering tires: Inflated correctly with tread at least 4/32 inch and no cuts","Front steering parts: Secure with little play","Driver fuel tank: Secure, no leaks, cap and gasket tight","Driver exhaust: Secure with good clearance and no leaks","Driver frame: Rails have no cracks","Driver drive tires: Inflated correctly with minimum 2/32 inch tread and tight lug nuts","Driver suspension: Springs and air bags have no damage and even height","Driver air brakes: Lines and chambers secure with no leaks","Driver side lights: Marker lights, reflectors, and tape intact","Rear fifth wheel: Kingpin secure, lubricated, and locked","Rear lights: Taillights and brake signals work","Rear mud flaps: Secure and not torn","Rear drive tires and suspension: Same as driver side","Passenger side: Mirrors, fuel tank, exhaust, and frame intact","Undercarriage: Driveline, u-joints, and differential secure with no leaks","Undercarriage brakes: Drums and rotors have no cracks, grease, or wear","Undercarriage air brakes: Build pressure correctly with no leaks and good pushrod travel","Tank manhole and valves: Vents, fittings, and gaskets secure with no leaks","Tank emergency shutoff: Switch works properly","Tank placards: Check they are correct for the load","Tank labels: Spec plate and retest dates current and easy to read","Tank safety gear: Grounding, bonding, spill kit, and PPE available","Tank catwalk and fenders: Clear, safe, and no damage","Overall vehicle: No fluid leaks, loose parts, or damage underneath","Cab documents: Shipping papers and hazmat docs current and accessible","Trailer brakes and lights: Connected and tested, all working"];
+
+// Variables
 let currentClockTime = "";
 let currentDate = "";
 let currentTenBreaks = [];
 let currentMeals = [];
+let selectedForm = "Semi";
 
+// Break calculator functions (unchanged)
 function randomTip() { return SAFETY_TIPS[Math.floor(Math.random() * SAFETY_TIPS.length)]; }
 function randomPreTrip() { return PRE_TRIP_TIPS[Math.floor(Math.random() * PRE_TRIP_TIPS.length)]; }
 
@@ -120,21 +124,19 @@ function formatWithDay(base, result) {
 }
 
 function createCard(label, duration, after, before, icon) {
-  return `
-    <div class="card rounded-3xl shadow p-6 border border-gray-200">
-      <div class="flex items-center gap-3 mb-4">
-        <i class="${icon} text-2xl text-blue-600"></i>
-        <div class="font-bold text-lg">${label} <span class="text-blue-600">(${duration})</span></div>
-      </div>
-      <div class="space-y-3 text-sm">
-        <div><span class="font-semibold text-emerald-600">START AFTER:</span> <span class="font-medium">${after}</span></div>
-        <div><span class="font-semibold text-amber-600">START BEFORE:</span> <span class="font-medium">${before}</span></div>
-      </div>
-    </div>`;
+  return `<div class="card rounded-3xl shadow p-6 border border-gray-200">
+    <div class="flex items-center gap-3 mb-4">
+      <i class="${icon} text-2xl text-blue-600"></i>
+      <div class="font-bold text-lg">${label} <span class="text-blue-600">(${duration})</span></div>
+    </div>
+    <div class="space-y-3 text-sm">
+      <div><span class="font-semibold text-emerald-600">START AFTER:</span> <span class="font-medium">${after}</span></div>
+      <div><span class="font-semibold text-amber-600">START BEFORE:</span> <span class="font-medium">${before}</span></div>
+    </div>
+  </div>`;
 }
 
 function calculateBreaks() {
-  // ... (same working logic as your last clean version)
   const timeInput = document.getElementById('clockIn').value;
   if (!timeInput) return;
 
@@ -152,6 +154,7 @@ function calculateBreaks() {
   currentDate = today.toLocaleDateString('en-US', dateOptions);
   document.getElementById('displayDate').textContent = currentDate;
 
+  // 10-min breaks
   const tenDefs = [{label:"Break #1", after:1, before:239},{label:"Break #2", after:241, before:479},{label:"Break #3", after:481, before:719},{label:"Break #4", after:721, before:959}];
   currentTenBreaks = [];
   let html10 = '';
@@ -163,6 +166,7 @@ function calculateBreaks() {
   });
   document.getElementById('tenMinBreaks').innerHTML = html10;
 
+  // Meals
   const mealDefs = [{label:"Meal #1", after:211, before:359},{label:"Meal #2", after:631, before:779}];
   currentMeals = [];
   let htmlMeal = '';
@@ -174,7 +178,22 @@ function calculateBreaks() {
   });
   document.getElementById('mealBreaks').innerHTML = htmlMeal;
 
-  const tipsHTML = `...` ; // (same tips section as before)
+  // Tips
+  const tipsHTML = `
+    <div class="card rounded-3xl p-6 border border-emerald-200">
+      <div class="flex items-center gap-3 mb-3">
+        <i class="fas fa-shield-alt text-2xl text-emerald-600"></i>
+        <h3 class="font-bold text-emerald-700">Safety Tip of the Day</h3>
+      </div>
+      <p class="text-gray-800">${randomTip()}</p>
+    </div>
+    <div class="card rounded-3xl p-6 border border-amber-200">
+      <div class="flex items-center gap-3 mb-3">
+        <i class="fas fa-clipboard-check text-2xl text-amber-600"></i>
+        <h3 class="font-bold text-amber-700">Pre-Trip Tip of the Day</h3>
+      </div>
+      <p class="text-gray-800">${randomPreTrip()}</p>
+    </div>`;
   document.getElementById('tipsSection').innerHTML = tipsHTML;
 }
 
@@ -186,9 +205,7 @@ function resetToNow() {
   calculateBreaks();
 }
 
-// ============== NEW LOAD TRACKER PDF LOGIC ==============
-let selectedForm = "Semi";
-
+// ============== LOAD TRACKER PDF ==============
 function selectForm(form) {
   selectedForm = form;
   document.getElementById('selectedFormName').textContent = form;
@@ -197,9 +214,9 @@ function selectForm(form) {
 }
 
 function generateLoadTrackerPDF() {
-  const truck = document.getElementById('truckNum').value || "—";
-  const trailer = document.getElementById('trailerNum').value || "—";
-  const mileage = document.getElementById('startMileage').value || "—";
+  const truck = document.getElementById('truckNum').value.trim() || "—";
+  const trailer = document.getElementById('trailerNum').value.trim() || "—";
+  const mileage = document.getElementById('startMileage').value.trim() || "—";
 
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
@@ -210,46 +227,43 @@ function generateLoadTrackerPDF() {
   y += 20;
 
   doc.setFontSize(12);
-  doc.text(`Clock In: ${currentClockTime}   Date: ${currentDate}`, 20, y);
-  doc.text(`Truck: ${truck}   Trailer: ${trailer}   Start Mileage: ${mileage}`, 20, y + 8);
+  doc.text(`Clock In: ${currentClockTime}     Date: ${currentDate}`, 20, y);
+  y += 8;
+  doc.text(`Truck: ${truck}     Trailer: ${trailer}     Start Mileage: ${mileage}`, 20, y);
   y += 25;
 
   // 10-min breaks
   doc.setFontSize(14);
   doc.text("10-Minute Breaks", 20, y);
-  y += 10;
-  currentTenBreaks.forEach((b, i) => {
+  y += 12;
+  currentTenBreaks.forEach(b => {
     doc.setFontSize(11);
-    doc.text(`${b.label} (${b.duration})`, 20, y);
-    doc.text(`Start After: ${b.after}`, 25, y + 6);
-    doc.text(`Start Before: ${b.before}`, 25, y + 12);
-    y += 18;
+    doc.text(`• ${b.label} (${b.duration})`, 20, y);
+    doc.text(`   Start After: ${b.after}`, 25, y + 7);
+    doc.text(`   Start Before: ${b.before}`, 25, y + 13);
+    y += 20;
   });
 
   // 30-min meals
   y += 5;
   doc.setFontSize(14);
   doc.text("30-Minute Meal Breaks", 20, y);
-  y += 10;
-  currentMeals.forEach((b) => {
+  y += 12;
+  currentMeals.forEach(b => {
     doc.setFontSize(11);
-    doc.text(`${b.label} (${b.duration})`, 20, y);
-    doc.text(`Start After: ${b.after}`, 25, y + 6);
-    doc.text(`Start Before: ${b.before}`, 25, y + 12);
-    y += 18;
+    doc.text(`• ${b.label} (${b.duration})`, 20, y);
+    doc.text(`   Start After: ${b.after}`, 25, y + 7);
+    doc.text(`   Start Before: ${b.before}`, 25, y + 13);
+    y += 20;
   });
 
-  // Simple compartment note
-  y += 10;
-  doc.setFontSize(12);
-  doc.text("Use diagram below to record compartment loading:", 20, y);
-  y += 10;
-
-  // Basic compartment diagram (visual aid)
   doc.setFontSize(10);
-  doc.text("Compartment:  1     2     3     4", 20, y);
-  doc.rect(20, y + 5, 30, 15); doc.rect(55, y + 5, 30, 15);
-  doc.rect(90, y + 5, 30, 15); doc.rect(125, y + 5, 30, 15);
+  doc.text("Compartment Diagram (use for manual loading notes):", 20, y + 15);
+  // Simple visual boxes
+  doc.rect(20, y + 25, 35, 20);
+  doc.rect(60, y + 25, 35, 20);
+  doc.rect(100, y + 25, 35, 20);
+  doc.rect(140, y + 25, 35, 20);
 
   doc.save(`Safety_Ninja_${selectedForm}_Load_Tracker_${currentClockTime.replace(/[:\s]/g, '')}.pdf`);
 }
@@ -257,7 +271,6 @@ function generateLoadTrackerPDF() {
 // Initialize
 window.onload = () => {
   resetToNow();
-  // Default to Semi selected
   document.getElementById('btnSemi').classList.add('active');
 };
 </script>
