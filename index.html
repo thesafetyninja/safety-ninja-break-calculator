@@ -11,8 +11,16 @@
     body { font-family: system-ui, -apple-system, sans-serif; background: #111827; color: white; }
     .card { transition: all 0.2s; background: #FEFEFE; color: #111827; border: 3px solid #FFD31F !important; cursor: pointer; }
     .card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2); }
-    .form-select-btn { transition: all 0.2s; }
-    .form-select-btn.active { border-color: #10b981 !important; background-color: #ecfdf5; }
+    
+    .form-select-btn {
+      transition: all 0.2s;
+      border: 3px solid #d1d5db; /* Default grey border */
+    }
+    .form-select-btn.active {
+      border: 4px solid #10b981 !important; /* Bold green when selected */
+      background-color: #ecfdf5;
+    }
+    
     #displayTime { color: #219c29 !important; }
     .custom-icon { width: 40px; height: 40px; object-fit: contain; margin-bottom: 8px; filter: brightness(0.95); }
   </style>
@@ -56,13 +64,13 @@
   <div class="card rounded-3xl shadow-md p-6 mt-12">
     <h2 class="uppercase text-xs font-bold text-amber-600 tracking-widest mb-4">GENERATE OPTIONAL LOAD TRACKER FORM</h2>
     <div class="grid grid-cols-2 gap-4 mb-6">
-      <!-- T&T on the LEFT -->
-      <button onclick="selectForm('T&T')" id="btnTandT" class="form-select-btn flex flex-col items-center py-4 border-2 border-gray-300 rounded-2xl hover:bg-gray-50">
+      <!-- T&T on LEFT -->
+      <button onclick="selectForm('T&T')" id="btnTandT" class="form-select-btn flex flex-col items-center py-4 rounded-2xl hover:bg-gray-50">
         <img src="assets/tandt-icon.png" class="custom-icon" alt="T&amp;T">
         <span class="font-bold">T&amp;T</span>
       </button>
-      <!-- Semi on the RIGHT -->
-      <button onclick="selectForm('Semi')" id="btnSemi" class="form-select-btn active flex flex-col items-center py-4 border-2 border-emerald-600 rounded-2xl hover:bg-emerald-50">
+      <!-- Semi on RIGHT -->
+      <button onclick="selectForm('Semi')" id="btnSemi" class="form-select-btn active flex flex-col items-center py-4 rounded-2xl hover:bg-emerald-50">
         <img src="assets/semi-icon.png" class="custom-icon" alt="Semi">
         <span class="font-bold">Semi</span>
       </button>
@@ -323,7 +331,7 @@ async function generateLoadTrackerPDF() {
 
 window.onload = () => {
   resetToNow();
-  document.getElementById('btnTandT').classList.add('active'); // Default to T&T now on left
+  document.getElementById('btnTandT').classList.add('active'); // T&T is default on left
 };
 </script>
 </body>
