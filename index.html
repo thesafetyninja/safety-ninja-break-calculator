@@ -84,11 +84,11 @@
       <i class="fas fa-print text-2xl"></i> Print Tracker (With Data)
     </button>
 
-    <!-- New Blank PDF Button -->
+    <!-- Blank PDF Button with custom pdf.png -->
     <button onclick="generateBlankPDF()" class="w-full flex items-center justify-center gap-3 font-bold py-4 rounded-2xl text-lg" style="background-color:#6B7280; color:white;">
-      <i class="fa-regular fa-file-png" style="color: rgb(255, 212, 59);"></i> Print Blank PDF
+      <img src="assets/pdf.png" alt="PDF Icon" class="w-6 h-6">
+      Print Blank PDF
     </button>
-
   </div>
 </div>
 
@@ -185,8 +185,7 @@ function populateStates() {
   });
 }
 
-function calculateBreaks() { /* ... same as previous full version ... */ 
-  // (Omitted here for brevity but identical to last working version)
+function calculateBreaks() {
   const stateKey = document.getElementById('stateSelect').value || "Federal (Interstate)";
   const rules = STATE_RULES[stateKey];
   document.getElementById('stateNote').innerHTML = `<strong>${stateKey}:</strong> ${rules.note}`;
@@ -279,7 +278,6 @@ function selectForm(form) {
 
 // ===================== FILLED PDF =====================
 async function generateLoadTrackerPDF() {
-  // ... (same as previous version with your X:260 for state) ...
   try {
     const truck = document.getElementById('truckNum').value.trim() || "—";
     const trailer = document.getElementById('trailerNum').value.trim() || "—";
@@ -317,45 +315,4 @@ async function generateLoadTrackerPDF() {
 
     const finalPdfBytes = await pdfDoc.save();
     const blob = new Blob([finalPdfBytes], { type: 'application/pdf' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Safety_Ninja_${selectedForm}_Load_Tracker.pdf`;
-    a.click();
-  } catch (e) {
-    console.error(e);
-    alert("PDF generation failed: " + e.message);
-  }
-}
-
-// ===================== NEW: BLANK PDF =====================
-async function generateBlankPDF() {
-  try {
-    const pdfPath = selectedForm === "Semi" ? "assets/Semi.pdf" : "assets/TandT.pdf";
-    const response = await fetch(pdfPath);
-    if (!response.ok) throw new Error("Could not load PDF");
-    const pdfBytes = new Uint8Array(await response.arrayBuffer());
-
-    const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
-    const finalPdfBytes = await pdfDoc.save();
-
-    const blob = new Blob([finalPdfBytes], { type: 'application/pdf' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Safety_Ninja_${selectedForm}_Blank_Form.pdf`;
-    a.click();
-  } catch (e) {
-    console.error(e);
-    alert("Blank PDF generation failed: " + e.message);
-  }
-}
-
-window.onload = () => {
-  populateStates();
-  document.getElementById('stateSelect').value = "California";
-  resetToNow();
-};
-</script>
-</body>
-</html>
+    const url
