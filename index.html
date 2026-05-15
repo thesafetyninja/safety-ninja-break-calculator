@@ -119,33 +119,39 @@ const STATE_RULES = {
   }
 };
 
-// ===================== TIPS =====================
-const SAFETY_TIPS = [ /* your full list - shortened here for brevity but you can keep all */ 
+// ===================== FULL SAFETY TIPS =====================
+const SAFETY_TIPS = [
   "Maintain safe following distance: one second per 10 feet of vehicle length plus extra for speed and conditions. Space saves lives. (Smith System)",
   "Drive defensively with SAFR: Scan hazards, Anticipate actions, Follow safely, React properly—stay one step ahead. (Smith System)",
-  "Fatigue is as dangerous as impairment. When drowsy, pull over and rest. (FMCSA 49 CFR §392.3)",
+  "Fatigue is as dangerous as impairment. When drowsy, pull over and rest. Arrive alive, not just on time. (FMCSA 49 CFR §392.3)",
   "Eyes on the road, hands on the wheel, mind on driving. One distraction can change everything—pull over to communicate. (NHTSA)",
-  "In rain, fog, snow, or wind: slow down, increase distance, stay in control. (FMCSA)",
-  "Liquid loads shift easily. Slow in curves, manage speed—prevent rollover. (FMCSA)",
-  "When backing, use G.O.A.L.—Get Out And Look every time. (FMCSA)",
-  "Inspect thoroughly before you roll and after you stop. (FMCSA 49 CFR §396.13)",
-  "Complacency creeps in on familiar routes. Stay sharp every mile. (NSC)",
-  "Know your Emergency Response Guidebook. Keep it in the cab within immediate reach. (49 CFR §172.602)",
-  "Bond and ground properly, verify loads with 3-point match every time to prevent sparks and incompatible mixes. (NFPA / FMCSA)",
-  "Hot conditions? Hydrate often, take breaks, watch for heat illness. (OSHA / FMCSA)",
-  "Know your fire extinguisher—PASS: Pull, Aim, Squeeze, Sweep. Check it daily. (FMCSA 49 CFR §393.95)",
-  "Safety is always priority one. No load is worth risking your life. (FMCSA)"
+  "In rain, fog, snow, or wind: slow down, increase distance, stay in control. Better late than never home. (FMCSA)",
+  "Liquid loads shift easily. Slow in curves, manage speed—prevent rollover and keep your rig upright. (FMCSA)",
+  "When backing, use G.O.A.L.—Get Out And Look every time. Blind spots kill; caution saves. (FMCSA)",
+  "Inspect thoroughly before you roll and after you stop. A missed defect can end your day or your life. (FMCSA 49 CFR §396.13)",
+  "Complacency creeps in on familiar routes. Stay sharp every mile—routine is the silent killer. (NSC)",
+  "Know your Emergency Response Guidebook. In any incident, consult it first to protect yourself and others. (49 CFR §172.602)",
+  "Bond and ground properly, verify loads with 3-point match every time. Prevent sparks and incompatible mixes. (NFPA / FMCSA)",
+  "Hot conditions? Hydrate often, take breaks, watch for heat illness signs—your body works as hard as your truck. (OSHA / FMCSA)",
+  "Know your fire extinguisher—PASS: Pull, Aim, Squeeze, Sweep. Be ready before fire spreads. (FMCSA 49 CFR §393.95)",
+  "Safety is always priority one. No load is worth risking your life or your family’s peace of mind. (FMCSA)"
 ];
 
-const PRE_TRIP_TIPS = [ /* your full list */ 
+// ===================== FULL PRE-TRIP TIPS =====================
+const PRE_TRIP_TIPS = [
   "Cab steering wheel: Check play is under 2 inches on a 20-inch wheel.",
-  "Cab horn, wipers, washers, mirrors, gauges, seatbelts, and emergency kit all functional.",
-  "Engine oil, coolant, power steering, belts, hoses, batteries, air system — all good.",
+  "Cab horn: Make sure it works properly.",
+  "Cab wipers and washers: Check they work and blades are good.",
+  "Cab mirrors: Clean, secure, and adjusted correctly.",
+  "Cab gauges: All read normal with no warning lights.",
+  "Cab seatbelts and emergency kit: Check seatbelts and make sure fire extinguisher is present.",
+  "Cab brakes: Parking brake holds and service brakes work with no pulling.",
+  "Engine oil, coolant, power steering, belts, hoses, batteries, air system — all checked.",
   "Front lights, windshield, bumper, steering tires (4/32 tread), steering parts secure.",
-  "Fuel tank, exhaust, frame, tires (2/32 tread), suspension, air brakes, lights intact.",
+  "Driver fuel tank, exhaust, frame, tires (2/32 tread), suspension, air brakes, lights intact.",
   "Rear fifth wheel, lights, mud flaps, drive tires & suspension checked.",
   "Tank manhole, valves, emergency shutoff, placards, labels, safety gear, catwalk all good.",
-  "Overall vehicle: No leaks or damage underneath. Documents current."
+  "Overall vehicle: No fluid leaks, loose parts, or damage underneath. Documents current."
 ];
 
 // ===================== VARIABLES & HELPERS =====================
@@ -195,7 +201,6 @@ function populateStates() {
   });
 }
 
-// ===================== MAIN CALCULATION =====================
 function calculateBreaks() {
   const stateKey = document.getElementById('stateSelect').value || "Federal (Interstate)";
   const rules = STATE_RULES[stateKey];
@@ -239,7 +244,7 @@ function calculateBreaks() {
   });
   document.getElementById('mealBreaks').innerHTML = htmlMeal;
 
-  // Tips (same as before)
+  // Tips
   const safety = randomTip(SAFETY_TIPS, lastSafetyIndex);
   lastSafetyIndex = safety.idx;
   const pretrip = randomTip(PRE_TRIP_TIPS, lastPreTripIndex);
@@ -263,8 +268,16 @@ function calculateBreaks() {
   document.getElementById('tipsSection').innerHTML = tipsHTML;
 }
 
-function refreshSafetyTip() { /* same as before */ }
-function refreshPreTripTip() { /* same as before */ }
+function refreshSafetyTip() {
+  const safety = randomTip(SAFETY_TIPS, lastSafetyIndex);
+  lastSafetyIndex = safety.idx;
+  document.querySelectorAll('#tipsSection p')[0].textContent = safety.tip;
+}
+function refreshPreTripTip() {
+  const pretrip = randomTip(PRE_TRIP_TIPS, lastPreTripIndex);
+  lastPreTripIndex = pretrip.idx;
+  document.querySelectorAll('#tipsSection p')[1].textContent = pretrip.tip;
+}
 
 function resetToNow() {
   const now = new Date();
@@ -282,12 +295,13 @@ function selectForm(form) {
   selectedForm = form;
 }
 
-// ===================== FIXED PDF GENERATION =====================
+// ===================== PDF WITH STATE AT TOP CENTER =====================
 async function generateLoadTrackerPDF() {
   try {
     const truck = document.getElementById('truckNum').value.trim() || "—";
     const trailer = document.getElementById('trailerNum').value.trim() || "—";
     const mileage = document.getElementById('startMileage').value.trim() || "—";
+    const selectedState = document.getElementById('stateSelect').value || "Federal (Interstate)";
 
     const pdfPath = selectedForm === "Semi" ? "assets/Semi.pdf" : "assets/TandT.pdf";
     const response = await fetch(pdfPath);
@@ -298,14 +312,22 @@ async function generateLoadTrackerPDF() {
     const page = pdfDoc.getPages()[0];
     const { height } = page.getSize();
 
-    // Header fields
+    // State at top center (bold)
+    page.drawText(selectedState, { 
+      x: 185, 
+      y: height - 45, 
+      size: 11, 
+      font: await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold)
+    });
+
+    // Header
     page.drawText(currentClockTime || "", { x: 90, y: height - 76, size: 9 });
     page.drawText(currentDate || "", { x: 73, y: height - 86, size: 8 });
     page.drawText(truck, { x: 225, y: height - 87, size: 9 });
     page.drawText(trailer, { x: 265, y: height - 87, size: 9 });
     page.drawText(mileage, { x: 330, y: height - 76, size: 9 });
 
-    // 10-min breaks (safe indexing)
+    // 10-min breaks
     currentTenBreaks.forEach((b, i) => {
       if (i === 0) { page.drawText(b.afterClean, { x: 120, y: height - 113, size: 11 }); page.drawText(b.beforeClean, { x: 200, y: height - 113, size: 11 }); }
       if (i === 1) { page.drawText(b.afterClean, { x: 325, y: height - 113, size: 11 }); page.drawText(b.beforeClean, { x: 405, y: height - 113, size: 11 }); }
@@ -313,7 +335,7 @@ async function generateLoadTrackerPDF() {
       if (i === 3) { page.drawText(b.afterClean, { x: 325, y: height - 134, size: 11 }); page.drawText(b.beforeClean, { x: 405, y: height - 134, size: 11 }); }
     });
 
-    // Meal breaks (safe indexing)
+    // Meal breaks
     currentMeals.forEach((b, i) => {
       if (i === 0) { page.drawText(b.afterClean, { x: 120, y: height - 154, size: 11 }); page.drawText(b.beforeClean, { x: 200, y: height - 154, size: 11 }); }
       if (i === 1) { page.drawText(b.afterClean, { x: 325, y: height - 154, size: 11 }); page.drawText(b.beforeClean, { x: 405, y: height - 154, size: 11 }); }
