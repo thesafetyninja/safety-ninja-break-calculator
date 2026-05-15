@@ -84,7 +84,6 @@
       <i class="fas fa-print text-2xl"></i> Print Tracker (With Data)
     </button>
 
-    <!-- Blank PDF Button with custom pdf.png -->
     <button onclick="generateBlankPDF()" class="w-full flex items-center justify-center gap-3 font-bold py-4 rounded-2xl text-lg" style="background-color:#6B7280; color:white;">
       <img src="assets/pdf.png" alt="PDF Icon" class="w-6 h-6">
       Print Blank PDF
@@ -107,28 +106,21 @@ const STATE_RULES = {
 const SAFETY_TIPS = [
   "Maintain safe following distance: one second per 10 feet of vehicle length plus extra for speed and conditions. Space saves lives. (Smith System)",
   "Drive defensively with SAFR: Scan hazards, Anticipate actions, Follow safely, React properly—stay one step ahead. (Smith System)",
-  "Fatigue is as dangerous as impairment. When drowsy, pull over and rest. Arrive alive, not just on time. (FMCSA 49 CFR §392.3)",
+  "Fatigue is as dangerous as impairment. When drowsy, pull over and rest. Arrive alive, not just on time. (FMCSA)",
   "Eyes on the road, hands on the wheel, mind on driving. One distraction can change everything—pull over to communicate. (NHTSA)",
-  "In rain, fog, snow, or wind: slow down, increase distance, stay in control. Better late than never home. (FMCSA)",
-  "Liquid loads shift easily. Slow in curves, manage speed—prevent rollover and keep your rig upright. (FMCSA)",
-  "When backing, use G.O.A.L.—Get Out And Look every time. Blind spots kill; caution saves. (FMCSA)",
-  "Inspect thoroughly before you roll and after you stop. A missed defect can end your day or your life. (FMCSA 49 CFR §396.13)",
-  "Complacency creeps in on familiar routes. Stay sharp every mile—routine is the silent killer. (NSC)",
-  "Know your Emergency Response Guidebook. In any incident, consult it first to protect yourself and others. (49 CFR §172.602)",
-  "Bond and ground properly, verify loads with 3-point match every time. Prevent sparks and incompatible mixes. (NFPA / FMCSA)",
-  "Hot conditions? Hydrate often, take breaks, watch for heat illness signs. (OSHA / FMCSA)",
-  "Know your fire extinguisher—PASS: Pull, Aim, Squeeze, Sweep. Check it daily. (FMCSA 49 CFR §393.95)",
-  "Safety is always priority one. No load is worth risking your life or your family’s peace of mind. (FMCSA)"
+  "In rain, fog, snow, or wind: slow down, increase distance, stay in control. (FMCSA)",
+  "Liquid loads shift easily. Slow in curves, manage speed—prevent rollover. (FMCSA)",
+  "When backing, use G.O.A.L.—Get Out And Look every time. (FMCSA)",
+  "Inspect thoroughly before you roll and after you stop. (FMCSA)",
+  "Complacency creeps in on familiar routes. Stay sharp every mile. (NSC)",
+  "Know your Emergency Response Guidebook. Keep it in the cab. (49 CFR §172.602)",
+  "Bond and ground properly before loading/unloading. (NFPA / FMCSA)",
+  "Safety is always priority one. No load is worth risking your life. (FMCSA)"
 ];
 
 const PRE_TRIP_TIPS = [
   "Cab steering wheel: Check play is under 2 inches on a 20-inch wheel.",
-  "Cab horn: Make sure it works properly.",
-  "Cab wipers and washers: Check they work and blades are good.",
-  "Cab mirrors: Clean, secure, and adjusted correctly.",
-  "Cab gauges: All read normal with no warning lights.",
-  "Cab seatbelts and emergency kit: Check seatbelts and fire extinguisher present.",
-  "Cab brakes: Parking brake holds and service brakes work with no pulling.",
+  "Cab horn, wipers, washers, mirrors, gauges, seatbelts, emergency kit all functional.",
   "Engine oil, coolant, power steering, belts, hoses, batteries, air system — all good.",
   "Front lights, windshield, bumper, steering tires (4/32 tread), steering parts secure.",
   "Fuel tank, exhaust, frame, tires (2/32 tread), suspension, air brakes, lights intact.",
@@ -315,4 +307,45 @@ async function generateLoadTrackerPDF() {
 
     const finalPdfBytes = await pdfDoc.save();
     const blob = new Blob([finalPdfBytes], { type: 'application/pdf' });
-    const url
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Safety_Ninja_${selectedForm}_Load_Tracker.pdf`;
+    a.click();
+  } catch (e) {
+    console.error(e);
+    alert("PDF generation failed: " + e.message);
+  }
+}
+
+// ===================== BLANK PDF =====================
+async function generateBlankPDF() {
+  try {
+    const pdfPath = selectedForm === "Semi" ? "assets/Semi.pdf" : "assets/TandT.pdf";
+    const response = await fetch(pdfPath);
+    if (!response.ok) throw new Error("Could not load PDF");
+    const pdfBytes = new Uint8Array(await response.arrayBuffer());
+
+    const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
+    const finalPdfBytes = await pdfDoc.save();
+
+    const blob = new Blob([finalPdfBytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Safety_Ninja_${selectedForm}_Blank_Form.pdf`;
+    a.click();
+  } catch (e) {
+    console.error(e);
+    alert("Blank PDF generation failed: " + e.message);
+  }
+}
+
+window.onload = () => {
+  populateStates();
+  document.getElementById('stateSelect').value = "California";
+  resetToNow();
+};
+</script>
+</body>
+</html>
