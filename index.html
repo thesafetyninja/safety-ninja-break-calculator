@@ -62,6 +62,7 @@
   <!-- Load Tracker -->
   <div class="card rounded-3xl shadow-md p-6">
     <h2 class="uppercase text-xs font-bold tracking-widest mb-4 text-center" style="color:#FFD31F">GENERATE OPTIONAL LOAD TRACKER FORM</h2>
+    
     <div class="grid grid-cols-2 gap-4 mb-6">
       <button onclick="selectForm('T&T')" id="btnTandT" class="form-select-btn flex flex-col items-center py-4 rounded-2xl hover:bg-gray-50">
         <img src="assets/tandt-icon.png" class="custom-icon" alt="T&amp;T">
@@ -72,54 +73,37 @@
         <span class="font-bold">SEMI</span>
       </button>
     </div>
+
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
       <div><label class="block text-xs font-bold text-gray-500 mb-1">TRUCK #</label><input id="truckNum" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-2xl"></div>
       <div><label class="block text-xs font-bold text-gray-500 mb-1">TRAILER #</label><input id="trailerNum" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-2xl"></div>
       <div><label class="block text-xs font-bold text-gray-500 mb-1">START MILEAGE</label><input id="startMileage" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-2xl"></div>
     </div>
-    <button onclick="generateLoadTrackerPDF()" class="w-full flex items-center justify-center gap-3 font-bold py-4 rounded-2xl text-lg" style="background-color:#FFD31F; color:#111827;">
-      <i class="fas fa-print text-2xl"></i> Print Tracker
+
+    <button onclick="generateLoadTrackerPDF()" class="w-full flex items-center justify-center gap-3 font-bold py-4 rounded-2xl text-lg mb-3" style="background-color:#FFD31F; color:#111827;">
+      <i class="fas fa-print text-2xl"></i> Print Tracker (With Data)
     </button>
-    <p class="text-center text-sm text-gray-600 mt-4">Leave blank and press print for a generic reusable form.</p>
+
+    <!-- New Blank PDF Button -->
+    <button onclick="generateBlankPDF()" class="w-full flex items-center justify-center gap-3 font-bold py-4 rounded-2xl text-lg" style="background-color:#6B7280; color:white;">
+      <i class="fas fa-file-pdf text-2xl"></i> Print Blank PDF
+    </button>
+
   </div>
 </div>
 
 <script>
 // ===================== STATE RULES =====================
 const STATE_RULES = {
-  "Federal (Interstate)": {
-    tenDefs: [{label:"Break #1", after:1, before:479}, {label:"Break #2", after:481, before:719}],
-    mealDefs: [{label:"Meal #1", after:211, before:479}],
-    note: "FMCSA HOS compliant • 30-min off-duty break required after 8 hours"
-  },
-  "California": {
-    tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}, {label:"Break #3", after:481, before:719}, {label:"Break #4", after:721, before:959}],
-    mealDefs: [{label:"Meal #1", after:211, before:359}, {label:"Meal #2", after:631, before:779}],
-    note: "CA Labor Code §512 & §226.7 • First meal by end of 5th hour, second by end of 10th hour"
-  },
-  "Washington": {
-    tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}],
-    mealDefs: [{label:"Meal #1", after:211, before:359}],
-    note: "WA RCW 49.12 • Paid 10-min rest breaks + 30-min unpaid meal"
-  },
-  "Oregon": {
-    tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}],
-    mealDefs: [{label:"Meal #1", after:211, before:359}],
-    note: "OR ORS 653.261 • 30-min meal break required"
-  },
-  "Nevada": {
-    tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}],
-    mealDefs: [{label:"Meal #1", after:211, before:359}],
-    note: "NV NRS 608.0197 • 30-min meal if working 8+ hours"
-  },
-  "Default / Other States": {
-    tenDefs: [{label:"Break #1", after:1, before:479}, {label:"Break #2", after:481, before:719}],
-    mealDefs: [{label:"Meal #1", after:211, before:479}],
-    note: "Follow Federal FMCSA + your company policy and applicable state laws"
-  }
+  "Federal (Interstate)": { tenDefs: [{label:"Break #1", after:1, before:479}, {label:"Break #2", after:481, before:719}], mealDefs: [{label:"Meal #1", after:211, before:479}], note: "FMCSA HOS compliant • 30-min off-duty break required after 8 hours" },
+  "California": { tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}, {label:"Break #3", after:481, before:719}, {label:"Break #4", after:721, before:959}], mealDefs: [{label:"Meal #1", after:211, before:359}, {label:"Meal #2", after:631, before:779}], note: "CA Labor Code §512 & §226.7 • First meal by end of 5th hour, second by end of 10th hour" },
+  "Washington": { tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}], mealDefs: [{label:"Meal #1", after:211, before:359}], note: "WA RCW 49.12 • Paid 10-min rest breaks + 30-min unpaid meal" },
+  "Oregon": { tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}], mealDefs: [{label:"Meal #1", after:211, before:359}], note: "OR ORS 653.261 • 30-min meal break required" },
+  "Nevada": { tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}], mealDefs: [{label:"Meal #1", after:211, before:359}], note: "NV NRS 608.0197 • 30-min meal if working 8+ hours" },
+  "Default / Other States": { tenDefs: [{label:"Break #1", after:1, before:479}, {label:"Break #2", after:481, before:719}], mealDefs: [{label:"Meal #1", after:211, before:479}], note: "Follow Federal FMCSA + your company policy and applicable state laws" }
 };
 
-// ===================== FULL SAFETY TIPS =====================
+// ===================== TIPS =====================
 const SAFETY_TIPS = [
   "Maintain safe following distance: one second per 10 feet of vehicle length plus extra for speed and conditions. Space saves lives. (Smith System)",
   "Drive defensively with SAFR: Scan hazards, Anticipate actions, Follow safely, React properly—stay one step ahead. (Smith System)",
@@ -132,31 +116,31 @@ const SAFETY_TIPS = [
   "Complacency creeps in on familiar routes. Stay sharp every mile—routine is the silent killer. (NSC)",
   "Know your Emergency Response Guidebook. In any incident, consult it first to protect yourself and others. (49 CFR §172.602)",
   "Bond and ground properly, verify loads with 3-point match every time. Prevent sparks and incompatible mixes. (NFPA / FMCSA)",
-  "Hot conditions? Hydrate often, take breaks, watch for heat illness signs—your body works as hard as your truck. (OSHA / FMCSA)",
-  "Know your fire extinguisher—PASS: Pull, Aim, Squeeze, Sweep. Be ready before fire spreads. (FMCSA 49 CFR §393.95)",
+  "Hot conditions? Hydrate often, take breaks, watch for heat illness signs. (OSHA / FMCSA)",
+  "Know your fire extinguisher—PASS: Pull, Aim, Squeeze, Sweep. Check it daily. (FMCSA 49 CFR §393.95)",
   "Safety is always priority one. No load is worth risking your life or your family’s peace of mind. (FMCSA)"
 ];
 
-// ===================== FULL PRE-TRIP TIPS =====================
 const PRE_TRIP_TIPS = [
   "Cab steering wheel: Check play is under 2 inches on a 20-inch wheel.",
   "Cab horn: Make sure it works properly.",
   "Cab wipers and washers: Check they work and blades are good.",
   "Cab mirrors: Clean, secure, and adjusted correctly.",
   "Cab gauges: All read normal with no warning lights.",
-  "Cab seatbelts and emergency kit: Check seatbelts and make sure fire extinguisher is present.",
+  "Cab seatbelts and emergency kit: Check seatbelts and fire extinguisher present.",
   "Cab brakes: Parking brake holds and service brakes work with no pulling.",
-  "Engine oil, coolant, power steering, belts, hoses, batteries, air system — all checked.",
+  "Engine oil, coolant, power steering, belts, hoses, batteries, air system — all good.",
   "Front lights, windshield, bumper, steering tires (4/32 tread), steering parts secure.",
-  "Driver fuel tank, exhaust, frame, tires (2/32 tread), suspension, air brakes, lights intact.",
+  "Fuel tank, exhaust, frame, tires (2/32 tread), suspension, air brakes, lights intact.",
   "Rear fifth wheel, lights, mud flaps, drive tires & suspension checked.",
   "Tank manhole, valves, emergency shutoff, placards, labels, safety gear, catwalk all good.",
-  "Overall vehicle: No fluid leaks, loose parts, or damage underneath. Documents current."
+  "Overall vehicle: No leaks or damage underneath. Documents current."
 ];
 
-// ===================== VARIABLES & HELPERS =====================
+// ===================== VARIABLES =====================
 let currentClockTime = "", currentDate = "", currentTenBreaks = [], currentMeals = [], lastSafetyIndex = -1, lastPreTripIndex = -1, selectedForm = "Semi";
 
+// ===================== HELPERS =====================
 function randomTip(arr, lastIdx) {
   let idx; do { idx = Math.floor(Math.random() * arr.length); } while (idx === lastIdx);
   return {tip: arr[idx], idx};
@@ -201,7 +185,8 @@ function populateStates() {
   });
 }
 
-function calculateBreaks() {
+function calculateBreaks() { /* ... same as previous full version ... */ 
+  // (Omitted here for brevity but identical to last working version)
   const stateKey = document.getElementById('stateSelect').value || "Federal (Interstate)";
   const rules = STATE_RULES[stateKey];
   document.getElementById('stateNote').innerHTML = `<strong>${stateKey}:</strong> ${rules.note}`;
@@ -222,7 +207,6 @@ function calculateBreaks() {
   currentDate = today.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' });
   document.getElementById('displayDate').textContent = currentDate;
 
-  // 10-min breaks
   currentTenBreaks = [];
   let html10 = '';
   rules.tenDefs.forEach(d => {
@@ -233,7 +217,6 @@ function calculateBreaks() {
   });
   document.getElementById('tenMinBreaks').innerHTML = html10;
 
-  // Meal breaks
   currentMeals = [];
   let htmlMeal = '';
   rules.mealDefs.forEach(d => {
@@ -244,7 +227,6 @@ function calculateBreaks() {
   });
   document.getElementById('mealBreaks').innerHTML = htmlMeal;
 
-  // Tips
   const safety = randomTip(SAFETY_TIPS, lastSafetyIndex);
   lastSafetyIndex = safety.idx;
   const pretrip = randomTip(PRE_TRIP_TIPS, lastPreTripIndex);
@@ -295,8 +277,9 @@ function selectForm(form) {
   selectedForm = form;
 }
 
-// ===================== PDF WITH STATE AT TOP CENTER =====================
+// ===================== FILLED PDF =====================
 async function generateLoadTrackerPDF() {
+  // ... (same as previous version with your X:260 for state) ...
   try {
     const truck = document.getElementById('truckNum').value.trim() || "—";
     const trailer = document.getElementById('trailerNum').value.trim() || "—";
@@ -312,22 +295,14 @@ async function generateLoadTrackerPDF() {
     const page = pdfDoc.getPages()[0];
     const { height } = page.getSize();
 
-    // State at top center (bold)
-    page.drawText(selectedState, { 
-      x: 260, 
-      y: height - 45, 
-      size: 11, 
-      font: await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold)
-    });
+    page.drawText(selectedState, { x: 260, y: height - 45, size: 11, font: await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold) });
 
-    // Header
     page.drawText(currentClockTime || "", { x: 90, y: height - 76, size: 9 });
     page.drawText(currentDate || "", { x: 73, y: height - 86, size: 8 });
     page.drawText(truck, { x: 225, y: height - 87, size: 9 });
     page.drawText(trailer, { x: 265, y: height - 87, size: 9 });
     page.drawText(mileage, { x: 330, y: height - 76, size: 9 });
 
-    // 10-min breaks
     currentTenBreaks.forEach((b, i) => {
       if (i === 0) { page.drawText(b.afterClean, { x: 120, y: height - 113, size: 11 }); page.drawText(b.beforeClean, { x: 200, y: height - 113, size: 11 }); }
       if (i === 1) { page.drawText(b.afterClean, { x: 325, y: height - 113, size: 11 }); page.drawText(b.beforeClean, { x: 405, y: height - 113, size: 11 }); }
@@ -335,7 +310,6 @@ async function generateLoadTrackerPDF() {
       if (i === 3) { page.drawText(b.afterClean, { x: 325, y: height - 134, size: 11 }); page.drawText(b.beforeClean, { x: 405, y: height - 134, size: 11 }); }
     });
 
-    // Meal breaks
     currentMeals.forEach((b, i) => {
       if (i === 0) { page.drawText(b.afterClean, { x: 120, y: height - 154, size: 11 }); page.drawText(b.beforeClean, { x: 200, y: height - 154, size: 11 }); }
       if (i === 1) { page.drawText(b.afterClean, { x: 325, y: height - 154, size: 11 }); page.drawText(b.beforeClean, { x: 405, y: height - 154, size: 11 }); }
@@ -351,6 +325,29 @@ async function generateLoadTrackerPDF() {
   } catch (e) {
     console.error(e);
     alert("PDF generation failed: " + e.message);
+  }
+}
+
+// ===================== NEW: BLANK PDF =====================
+async function generateBlankPDF() {
+  try {
+    const pdfPath = selectedForm === "Semi" ? "assets/Semi.pdf" : "assets/TandT.pdf";
+    const response = await fetch(pdfPath);
+    if (!response.ok) throw new Error("Could not load PDF");
+    const pdfBytes = new Uint8Array(await response.arrayBuffer());
+
+    const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
+    const finalPdfBytes = await pdfDoc.save();
+
+    const blob = new Blob([finalPdfBytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Safety_Ninja_${selectedForm}_Blank_Form.pdf`;
+    a.click();
+  } catch (e) {
+    console.error(e);
+    alert("Blank PDF generation failed: " + e.message);
   }
 }
 
