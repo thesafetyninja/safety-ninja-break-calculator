@@ -94,33 +94,69 @@
 <script>
 // ===================== STATE RULES =====================
 const STATE_RULES = {
-  "Federal (Interstate)": { tenDefs: [{label:"Break #1", after:1, before:479}, {label:"Break #2", after:481, before:719}], mealDefs: [{label:"Meal #1", after:211, before:479}], note: "FMCSA HOS compliant • 30-min off-duty break required after 8 hours" },
-  "California": { tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}, {label:"Break #3", after:481, before:719}, {label:"Break #4", after:721, before:959}], mealDefs: [{label:"Meal #1", after:211, before:359}, {label:"Meal #2", after:631, before:779}], note: "CA Labor Code §512 & §226.7 • First meal by end of 5th hour, second by end of 10th hour" },
-  "Washington": { tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}], mealDefs: [{label:"Meal #1", after:211, before:359}], note: "WA RCW 49.12 • Paid 10-min rest breaks + 30-min unpaid meal" },
-  "Oregon": { tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}], mealDefs: [{label:"Meal #1", after:211, before:359}], note: "OR ORS 653.261 • 30-min meal break required" },
-  "Nevada": { tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}], mealDefs: [{label:"Meal #1", after:211, before:359}], note: "NV NRS 608.0197 • 30-min meal if working 8+ hours" },
-  "Default / Other States": { tenDefs: [{label:"Break #1", after:1, before:479}, {label:"Break #2", after:481, before:719}], mealDefs: [{label:"Meal #1", after:211, before:479}], note: "Follow Federal FMCSA + your company policy and applicable state laws" }
+  "Federal (Interstate)": {
+    tenDefs: [{label:"Break #1", after:1, before:479}, {label:"Break #2", after:481, before:719}],
+    mealDefs: [{label:"Meal #1", after:211, before:479}],
+    note: "FMCSA HOS compliant • 30-min off-duty break required after 8 hours"
+  },
+  "California": {
+    tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}],
+    mealDefs: [{label:"Meal #1", after:211, before:359}, {label:"Meal #2", after:631, before:779}],
+    note: "True CA Law (Labor Code §512) • First meal by end of 5th hour, second by end of 10th hour"
+  },
+  "California Alternate 1": {
+    tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}, {label:"Break #3", after:481, before:719}, {label:"Break #4", after:721, before:959}],
+    mealDefs: [{label:"Meal #1", after:211, before:299}, {label:"Meal #2", after:631, before:719}],
+    note: "Company Policy (Stricter) • Meal 1: 3.5–5 hrs • Meal 2: 10.5–12 hrs"
+  },
+  "Washington": {
+    tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}],
+    mealDefs: [{label:"Meal #1", after:211, before:359}],
+    note: "WA RCW 49.12 • Paid 10-min rest + unpaid 30-min meal"
+  },
+  "Oregon": {
+    tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}],
+    mealDefs: [{label:"Meal #1", after:211, before:359}],
+    note: "OR ORS 653.261 • 30-min meal break required"
+  },
+  "Nevada": {
+    tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}],
+    mealDefs: [{label:"Meal #1", after:211, before:359}],
+    note: "NV NRS 608.0197 • 30-min meal if working 8+ hours"
+  },
+  "Default / Other States": {
+    tenDefs: [{label:"Break #1", after:1, before:479}, {label:"Break #2", after:481, before:719}],
+    mealDefs: [{label:"Meal #1", after:211, before:479}],
+    note: "Follow Federal FMCSA + your company policy"
+  }
 };
 
 // ===================== TIPS =====================
 const SAFETY_TIPS = [
   "Maintain safe following distance: one second per 10 feet of vehicle length plus extra for speed and conditions. Space saves lives. (Smith System)",
   "Drive defensively with SAFR: Scan hazards, Anticipate actions, Follow safely, React properly—stay one step ahead. (Smith System)",
-  "Fatigue is as dangerous as impairment. When drowsy, pull over and rest. Arrive alive, not just on time. (FMCSA)",
+  "Fatigue is as dangerous as impairment. When drowsy, pull over and rest. Arrive alive, not just on time. (FMCSA 49 CFR §392.3)",
   "Eyes on the road, hands on the wheel, mind on driving. One distraction can change everything—pull over to communicate. (NHTSA)",
-  "In rain, fog, snow, or wind: slow down, increase distance, stay in control. (FMCSA)",
-  "Liquid loads shift easily. Slow in curves, manage speed—prevent rollover. (FMCSA)",
-  "When backing, use G.O.A.L.—Get Out And Look every time. (FMCSA)",
-  "Inspect thoroughly before you roll and after you stop. (FMCSA)",
-  "Complacency creeps in on familiar routes. Stay sharp every mile. (NSC)",
-  "Know your Emergency Response Guidebook. Keep it in the cab. (49 CFR §172.602)",
-  "Bond and ground properly before loading/unloading. (NFPA / FMCSA)",
-  "Safety is always priority one. No load is worth risking your life. (FMCSA)"
+  "In rain, fog, snow, or wind: slow down, increase distance, stay in control. Better late than never home. (FMCSA)",
+  "Liquid loads shift easily. Slow in curves, manage speed—prevent rollover and keep your rig upright. (FMCSA)",
+  "When backing, use G.O.A.L.—Get Out And Look every time. Blind spots kill; caution saves. (FMCSA)",
+  "Inspect thoroughly before you roll and after you stop. A missed defect can end your day or your life. (FMCSA 49 CFR §396.13)",
+  "Complacency creeps in on familiar routes. Stay sharp every mile—routine is the silent killer. (NSC)",
+  "Know your Emergency Response Guidebook. In any incident, consult it first to protect yourself and others. (49 CFR §172.602)",
+  "Bond and ground properly, verify loads with 3-point match every time. Prevent sparks and incompatible mixes. (NFPA / FMCSA)",
+  "Hot conditions? Hydrate often, take breaks, watch for heat illness signs. (OSHA / FMCSA)",
+  "Know your fire extinguisher—PASS: Pull, Aim, Squeeze, Sweep. Check it daily. (FMCSA 49 CFR §393.95)",
+  "Safety is always priority one. No load is worth risking your life or your family’s peace of mind. (FMCSA)"
 ];
 
 const PRE_TRIP_TIPS = [
   "Cab steering wheel: Check play is under 2 inches on a 20-inch wheel.",
-  "Cab horn, wipers, washers, mirrors, gauges, seatbelts, emergency kit all functional.",
+  "Cab horn: Make sure it works properly.",
+  "Cab wipers and washers: Check they work and blades are good.",
+  "Cab mirrors: Clean, secure, and adjusted correctly.",
+  "Cab gauges: All read normal with no warning lights.",
+  "Cab seatbelts and emergency kit: Check seatbelts and fire extinguisher present.",
+  "Cab brakes: Parking brake holds and service brakes work with no pulling.",
   "Engine oil, coolant, power steering, belts, hoses, batteries, air system — all good.",
   "Front lights, windshield, bumper, steering tires (4/32 tread), steering parts secure.",
   "Fuel tank, exhaust, frame, tires (2/32 tread), suspension, air brakes, lights intact.",
@@ -343,7 +379,7 @@ async function generateBlankPDF() {
 
 window.onload = () => {
   populateStates();
-  document.getElementById('stateSelect').value = "California";
+  document.getElementById('stateSelect').value = "California Alternate 1";
   resetToNow();
 };
 </script>
