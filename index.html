@@ -15,6 +15,10 @@
     .form-select-btn.active { border: 4px solid #10b981 !important; background-color: #ecfdf5; }
     #displayTime { color: #219c29 !important; }
     .custom-icon { width: 40px; height: 40px; object-fit: contain; margin-bottom: 8px; }
+    
+    /* Modal */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-content { background: #1F2937; width: 95%; max-width: 520px; max-height: 90vh; overflow-y: auto; border-radius: 16px; border: 3px solid #FFD31F; }
   </style>
 </head>
 <body class="py-6">
@@ -26,6 +30,10 @@
     <label class="block uppercase text-blue-600 text-sm font-bold tracking-widest mb-3">SELECT STATE / JURISDICTION</label>
     <select id="stateSelect" onchange="calculateBreaks()" class="w-full px-6 py-4 text-lg border border-gray-300 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-200 bg-white text-gray-900"></select>
     <div id="stateNote" class="mt-4 text-sm text-amber-700 font-medium"></div>
+    
+    <button onclick="showRulesModal()" class="mt-4 text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1">
+      <i class="fas fa-list-ul"></i> View All State & Company Break Rules
+    </button>
   </div>
 
   <!-- Clock In -->
@@ -91,6 +99,17 @@
   </div>
 </div>
 
+<!-- Rules Modal -->
+<div id="rulesModal" class="modal">
+  <div class="modal-content p-6">
+    <div class="flex justify-between items-center mb-6 sticky top-0 bg-[#1F2937] pb-4 border-b border-gray-600">
+      <h2 class="text-lg font-bold">Break Rules by State / Company</h2>
+      <button onclick="hideRulesModal()" class="text-3xl text-gray-400 hover:text-white">×</button>
+    </div>
+    <div id="rulesContent" class="space-y-4"></div>
+  </div>
+</div>
+
 <script>
 // ===================== STATE RULES =====================
 const STATE_RULES = {
@@ -107,12 +126,12 @@ const STATE_RULES = {
   "California Alternate 1": {
     tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}, {label:"Break #3", after:481, before:719}, {label:"Break #4", after:721, before:959}],
     mealDefs: [{label:"Meal #1", after:211, before:359}, {label:"Meal #2", after:631, before:779}],
-    note: "Company Policy (Stricter) • Meal 1: After 3.5 hrs (buffered) → before 6th hr • Meal 2: After 10.5 hrs (buffered) → before 13th hr"
+    note: "Company Policy (Stricter) • Meal 1: After 3.5 hrs → before 6th hr • Meal 2: After 10.5 hrs → before 13th hr"
   },
   "Washington": {
     tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}],
     mealDefs: [{label:"Meal #1", after:211, before:359}],
-    note: "WA RCW 49.12 • Paid 10-min rest breaks + 30-min unpaid meal"
+    note: "WA RCW 49.12 • Paid 10-min rest + unpaid 30-min meal"
   },
   "Oregon": {
     tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}],
@@ -377,6 +396,34 @@ async function generateBlankPDF() {
   }
 }
 
+// ===================== RULES MODAL =====================
+function showRulesModal() {
+  const content = document.getElementById('rulesContent');
+  content.innerHTML = '';
+
+  Object.keys(STATE_RULES).forEach(state => {
+    const r = STATE_RULES[state];
+    const div = document.createElement('div');
+    div.className = "border border-gray-600 rounded-xl p-4";
+    div.innerHTML = `
+      <div class="font-bold text-amber-400 mb-2">${state}</div>
+      <div class="text-sm text-gray-300">${r.note}</div>
+      <div class="mt-3 text-xs">
+        <div><strong>10-min Breaks:</strong> ${r.tenDefs.length} total</div>
+        <div><strong>30-min Meals:</strong> ${r.mealDefs.length} total</div>
+      </div>
+    `;
+    content.appendChild(div);
+  });
+
+  document.getElementById('rulesModal').style.display = 'flex';
+}
+
+function hideRulesModal() {
+  document.getElementById('rulesModal').style.display = 'none';
+}
+
+// ===================== INITIALIZE =====================
 window.onload = () => {
   populateStates();
   document.getElementById('stateSelect').value = "California Alternate 1";
