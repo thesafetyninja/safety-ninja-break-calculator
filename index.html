@@ -188,14 +188,6 @@ const PRE_TRIP_TIPS = [
 let currentClockTime = "", currentDate = "", currentTenBreaks = [], currentMeals = [], lastSafetyIndex = -1, lastPreTripIndex = -1, selectedForm = "Semi";
 
 // ===================== HELPERS =====================
-function minutesToHrsMins(mins) {
-  const hours = Math.floor(mins / 60);
-  const minutes = mins % 60;
-  if (hours === 0) return `${minutes} minutes`;
-  if (minutes === 0) return `${hours} hours`;
-  return `${hours} hours ${minutes} minutes`;
-}
-
 function randomTip(arr, lastIdx) {
   let idx; do { idx = Math.floor(Math.random() * arr.length); } while (idx === lastIdx);
   return {tip: arr[idx], idx};
@@ -331,7 +323,7 @@ function selectForm(form) {
   selectedForm = form;
 }
 
-// ===================== FILLED PDF =====================
+// ===================== FILLED PDF (Bold Break Times) =====================
 async function generateLoadTrackerPDF() {
   try {
     const truck = document.getElementById('truckNum').value.trim() || "—";
@@ -348,24 +340,48 @@ async function generateLoadTrackerPDF() {
     const page = pdfDoc.getPages()[0];
     const { height } = page.getSize();
 
+    // State
     page.drawText(selectedState, { x: 260, y: height - 45, size: 11, font: await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold) });
 
+    // Header
     page.drawText(currentClockTime || "", { x: 90, y: height - 76, size: 9 });
     page.drawText(currentDate || "", { x: 73, y: height - 86, size: 8 });
     page.drawText(truck, { x: 225, y: height - 87, size: 9 });
     page.drawText(trailer, { x: 265, y: height - 87, size: 9 });
     page.drawText(mileage, { x: 330, y: height - 76, size: 9 });
 
+    // Bold 10-min breaks
     currentTenBreaks.forEach((b, i) => {
-      if (i === 0) { page.drawText(b.afterClean, { x: 120, y: height - 113, size: 11 }); page.drawText(b.beforeClean, { x: 200, y: height - 113, size: 11 }); }
-      if (i === 1) { page.drawText(b.afterClean, { x: 325, y: height - 113, size: 11 }); page.drawText(b.beforeClean, { x: 405, y: height - 113, size: 11 }); }
-      if (i === 2) { page.drawText(b.afterClean, { x: 120, y: height - 134, size: 11 }); page.drawText(b.beforeClean, { x: 200, y: height - 134, size: 11 }); }
-      if (i === 3) { page.drawText(b.afterClean, { x: 325, y: height - 134, size: 11 }); page.drawText(b.beforeClean, { x: 405, y: height - 134, size: 11 }); }
+      const boldFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+      if (i === 0) { 
+        page.drawText(b.afterClean, { x: 120, y: height - 113, size: 11, font: boldFont }); 
+        page.drawText(b.beforeClean, { x: 200, y: height - 113, size: 11, font: boldFont }); 
+      }
+      if (i === 1) { 
+        page.drawText(b.afterClean, { x: 325, y: height - 113, size: 11, font: boldFont }); 
+        page.drawText(b.beforeClean, { x: 405, y: height - 113, size: 11, font: boldFont }); 
+      }
+      if (i === 2) { 
+        page.drawText(b.afterClean, { x: 120, y: height - 134, size: 11, font: boldFont }); 
+        page.drawText(b.beforeClean, { x: 200, y: height - 134, size: 11, font: boldFont }); 
+      }
+      if (i === 3) { 
+        page.drawText(b.afterClean, { x: 325, y: height - 134, size: 11, font: boldFont }); 
+        page.drawText(b.beforeClean, { x: 405, y: height - 134, size: 11, font: boldFont }); 
+      }
     });
 
+    // Bold Meal breaks
     currentMeals.forEach((b, i) => {
-      if (i === 0) { page.drawText(b.afterClean, { x: 120, y: height - 154, size: 11 }); page.drawText(b.beforeClean, { x: 200, y: height - 154, size: 11 }); }
-      if (i === 1) { page.drawText(b.afterClean, { x: 325, y: height - 154, size: 11 }); page.drawText(b.beforeClean, { x: 405, y: height - 154, size: 11 }); }
+      const boldFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+      if (i === 0) { 
+        page.drawText(b.afterClean, { x: 120, y: height - 154, size: 11, font: boldFont }); 
+        page.drawText(b.beforeClean, { x: 200, y: height - 154, size: 11, font: boldFont }); 
+      }
+      if (i === 1) { 
+        page.drawText(b.afterClean, { x: 325, y: height - 154, size: 11, font: boldFont }); 
+        page.drawText(b.beforeClean, { x: 405, y: height - 154, size: 11, font: boldFont }); 
+      }
     });
 
     const finalPdfBytes = await pdfDoc.save();
@@ -404,15 +420,7 @@ async function generateBlankPDF() {
   }
 }
 
-// ===================== RULES MODAL (Clean Display - No Buffer) =====================
-function minutesToHrsMins(mins) {
-  const hours = Math.floor(mins / 60);
-  const minutes = mins % 60;
-  if (hours === 0) return `${minutes} minutes`;
-  if (minutes === 0) return `${hours} hours`;
-  return `${hours} hours ${minutes} minutes`;
-}
-
+// ===================== RULES MODAL =====================
 function showRulesModal() {
   const content = document.getElementById('rulesContent');
   content.innerHTML = '';
@@ -423,7 +431,6 @@ function showRulesModal() {
       <div class="border border-gray-600 rounded-2xl p-5">
         <div class="font-bold text-amber-400 text-lg mb-3">${state}</div>
         <div class="text-sm text-gray-300 mb-4">${r.note}</div>
-        
         <div class="space-y-4">
           <div>
             <div class="font-semibold text-emerald-400 mb-2">10-Minute Breaks</div>
@@ -454,7 +461,14 @@ function hideRulesModal() {
   document.getElementById('rulesModal').style.display = 'none';
 }
 
-// ===================== INITIALIZE =====================
+function minutesToHrsMins(mins) {
+  const hours = Math.floor(mins / 60);
+  const minutes = mins % 60;
+  if (hours === 0) return `${minutes} minutes`;
+  if (minutes === 0) return `${hours} hours`;
+  return `${hours} hours ${minutes} minutes`;
+}
+
 window.onload = () => {
   populateStates();
   document.getElementById('stateSelect').value = "California Alternate 1";
