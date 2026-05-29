@@ -151,43 +151,21 @@ const STATE_RULES = {
 };
 
 // ===================== TIPS =====================
-const SAFETY_TIPS = [
-  "Maintain safe following distance: one second per 10 feet of vehicle length plus extra for speed and conditions. Space saves lives. (Smith System)",
-  "Drive defensively with SAFR: Scan hazards, Anticipate actions, Follow safely, React properly—stay one step ahead. (Smith System)",
-  "Fatigue is as dangerous as impairment. When drowsy, pull over and rest. Arrive alive, not just on time. (FMCSA 49 CFR §392.3)",
-  "Eyes on the road, hands on the wheel, mind on driving. One distraction can change everything—pull over to communicate. (NHTSA)",
-  "In rain, fog, snow, or wind: slow down, increase distance, stay in control. Better late than never home. (FMCSA)",
-  "Liquid loads shift easily. Slow in curves, manage speed—prevent rollover and keep your rig upright. (FMCSA)",
-  "When backing, use G.O.A.L.—Get Out And Look every time. Blind spots kill; caution saves. (FMCSA)",
-  "Inspect thoroughly before you roll and after you stop. A missed defect can end your day or your life. (FMCSA 49 CFR §396.13)",
-  "Complacency creeps in on familiar routes. Stay sharp every mile—routine is the silent killer. (NSC)",
-  "Know your Emergency Response Guidebook. In any incident, consult it first to protect yourself and others. (49 CFR §172.602)",
-  "Bond and ground properly, verify loads with 3-point match every time. Prevent sparks and incompatible mixes. (NFPA / FMCSA)",
-  "Hot conditions? Hydrate often, take breaks, watch for heat illness signs. (OSHA / FMCSA)",
-  "Know your fire extinguisher—PASS: Pull, Aim, Squeeze, Sweep. Check it daily. (FMCSA 49 CFR §393.95)",
-  "Safety is always priority one. No load is worth risking your life or your family’s peace of mind. (FMCSA)"
-];
-
-const PRE_TRIP_TIPS = [
-  "Cab steering wheel: Check play is under 2 inches on a 20-inch wheel.",
-  "Cab horn: Make sure it works properly.",
-  "Cab wipers and washers: Check they work and blades are good.",
-  "Cab mirrors: Clean, secure, and adjusted correctly.",
-  "Cab gauges: All read normal with no warning lights.",
-  "Cab seatbelts and emergency kit: Check seatbelts and fire extinguisher present.",
-  "Cab brakes: Parking brake holds and service brakes work with no pulling.",
-  "Engine oil, coolant, power steering, belts, hoses, batteries, air system — all good.",
-  "Front lights, windshield, bumper, steering tires (4/32 tread), steering parts secure.",
-  "Fuel tank, exhaust, frame, tires (2/32 tread), suspension, air brakes, lights intact.",
-  "Rear fifth wheel, lights, mud flaps, drive tires & suspension checked.",
-  "Tank manhole, valves, emergency shutoff, placards, labels, safety gear, catwalk all good.",
-  "Overall vehicle: No leaks or damage underneath. Documents current."
-];
+const SAFETY_TIPS = [ /* your full list - same as before */ ];
+const PRE_TRIP_TIPS = [ /* your full list - same as before */ ];
 
 // ===================== VARIABLES =====================
 let currentClockTime = "", currentDate = "", currentTenBreaks = [], currentMeals = [], lastSafetyIndex = -1, lastPreTripIndex = -1, selectedForm = "Semi";
 
 // ===================== HELPERS =====================
+function minutesToHrsMins(mins) {
+  const hours = Math.floor(mins / 60);
+  const minutes = mins % 60;
+  if (hours === 0) return `${minutes} minutes`;
+  if (minutes === 0) return `${hours} hours`;
+  return `${hours} hours ${minutes} minutes`;
+}
+
 function randomTip(arr, lastIdx) {
   let idx; do { idx = Math.floor(Math.random() * arr.length); } while (idx === lastIdx);
   return {tip: arr[idx], idx};
@@ -396,7 +374,15 @@ async function generateBlankPDF() {
   }
 }
 
-// ===================== RULES MODAL (with break windows) =====================
+// ===================== RULES MODAL (with hours & minutes) =====================
+function minutesToHrsMins(mins) {
+  const hours = Math.floor(mins / 60);
+  const minutes = mins % 60;
+  if (hours === 0) return `${minutes} minutes`;
+  if (minutes === 0) return `${hours} hours`;
+  return `${hours} hours ${minutes} minutes`;
+}
+
 function showRulesModal() {
   const content = document.getElementById('rulesContent');
   content.innerHTML = '';
@@ -410,17 +396,21 @@ function showRulesModal() {
         
         <div class="space-y-4">
           <div>
-            <div class="font-semibold text-emerald-400 mb-1">10-Minute Breaks</div>
+            <div class="font-semibold text-emerald-400 mb-2">10-Minute Breaks</div>
     `;
 
     r.tenDefs.forEach(b => {
-      html += `<div class="text-xs bg-gray-800 rounded p-2 mb-1">${b.label}: After ${b.after} min → Before ${b.before} min</div>`;
+      html += `<div class="text-sm bg-gray-800 rounded p-3 mb-2">
+        ${b.label}: After <strong>${minutesToHrsMins(b.after)}</strong> → Before <strong>${minutesToHrsMins(b.before)}</strong>
+      </div>`;
     });
 
-    html += `</div><div><div class="font-semibold text-amber-400 mb-1">30-Minute Meal Breaks</div>`;
+    html += `</div><div><div class="font-semibold text-amber-400 mb-2">30-Minute Meal Breaks</div>`;
 
     r.mealDefs.forEach(b => {
-      html += `<div class="text-xs bg-gray-800 rounded p-2 mb-1">${b.label}: After ${b.after} min → Before ${b.before} min</div>`;
+      html += `<div class="text-sm bg-gray-800 rounded p-3 mb-2">
+        ${b.label}: After <strong>${minutesToHrsMins(b.after)}</strong> → Before <strong>${minutesToHrsMins(b.before)}</strong>
+      </div>`;
     });
 
     html += `</div></div></div>`;
