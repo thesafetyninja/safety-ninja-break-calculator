@@ -15,8 +15,6 @@
     .form-select-btn.active { border: 4px solid #10b981 !important; background-color: #ecfdf5; }
     #displayTime { color: #219c29 !important; }
     .custom-icon { width: 40px; height: 40px; object-fit: contain; margin-bottom: 8px; }
-    
-    /* Modal */
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; }
     .modal-content { background: #1F2937; width: 95%; max-width: 520px; max-height: 90vh; overflow-y: auto; border-radius: 16px; border: 3px solid #FFD31F; }
   </style>
@@ -113,58 +111,30 @@
 <script>
 // ===================== STATE RULES =====================
 const STATE_RULES = {
-  "Federal (Interstate)": {
-    tenDefs: [{label:"Break #1", after:1, before:479}, {label:"Break #2", after:481, before:719}],
-    mealDefs: [{label:"Meal #1", after:211, before:479}],
-    note: "FMCSA HOS compliant • 30-min off-duty break required after 8 hours"
-  },
-  "California": {
-    tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}],
-    mealDefs: [{label:"Meal #1", after:211, before:359}, {label:"Meal #2", after:631, before:779}],
-    note: "True CA Law (Labor Code §512) • First meal by end of 5th hour, second by end of 10th hour"
-  },
-  "California Alternate 1": {
-    tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}, {label:"Break #3", after:481, before:719}, {label:"Break #4", after:721, before:959}],
-    mealDefs: [{label:"Meal #1", after:211, before:359}, {label:"Meal #2", after:631, before:779}],
-    note: "Custom Company Policy (Stricter) • Meal 1: After 3.5 hrs → before 6th hr • Meal 2: After 10.5 hrs → before 13th hr"
-  },
-  "Washington": {
-    tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}],
-    mealDefs: [{label:"Meal #1", after:211, before:359}],
-    note: "WA RCW 49.12 • Paid 10-min rest + unpaid 30-min meal"
-  },
-  "Oregon": {
-    tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}],
-    mealDefs: [{label:"Meal #1", after:211, before:359}],
-    note: "OR ORS 653.261 • 30-min meal break required"
-  },
-  "Nevada": {
-    tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}],
-    mealDefs: [{label:"Meal #1", after:211, before:359}],
-    note: "NV NRS 608.0197 • 30-min meal if working 8+ hours"
-  },
-  "Default / Other States": {
-    tenDefs: [{label:"Break #1", after:1, before:479}, {label:"Break #2", after:481, before:719}],
-    mealDefs: [{label:"Meal #1", after:211, before:479}],
-    note: "Follow Federal FMCSA + your company policy"
-  }
+  "Federal (Interstate)": { tenDefs: [{label:"Break #1", after:1, before:479}, {label:"Break #2", after:481, before:719}], mealDefs: [{label:"Meal #1", after:211, before:479}], note: "FMCSA HOS compliant • 30-min off-duty break required after 8 hours" },
+  "California": { tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}], mealDefs: [{label:"Meal #1", after:211, before:359}, {label:"Meal #2", after:631, before:779}], note: "True CA Law (Labor Code §512) • First meal by end of 5th hour, second by end of 10th hour" },
+  "California Alternate 1": { tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}, {label:"Break #3", after:481, before:719}, {label:"Break #4", after:721, before:959}], mealDefs: [{label:"Meal #1", after:211, before:359}, {label:"Meal #2", after:631, before:779}], note: "Custom Company Policy (Stricter) • Meal 1: After 3.5 hrs → before 6th hr • Meal 2: After 10.5 hrs → before 13th hr" },
+  "Washington": { tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}], mealDefs: [{label:"Meal #1", after:211, before:359}], note: "WA RCW 49.12 • Paid 10-min rest + unpaid 30-min meal" },
+  "Oregon": { tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}], mealDefs: [{label:"Meal #1", after:211, before:359}], note: "OR ORS 653.261 • 30-min meal break required" },
+  "Nevada": { tenDefs: [{label:"Break #1", after:1, before:239}, {label:"Break #2", after:241, before:479}], mealDefs: [{label:"Meal #1", after:211, before:359}], note: "NV NRS 608.0197 • 30-min meal if working 8+ hours" },
+  "Default / Other States": { tenDefs: [{label:"Break #1", after:1, before:479}, {label:"Break #2", after:481, before:719}], mealDefs: [{label:"Meal #1", after:211, before:479}], note: "Follow Federal FMCSA + your company policy" }
 };
 
 // ===================== TIPS =====================
 const SAFETY_TIPS = [
   "Maintain safe following distance: one second per 10 feet of vehicle length plus extra for speed and conditions. Space saves lives. (Smith System)",
   "Drive defensively with SAFR: Scan hazards, Anticipate actions, Follow safely, React properly—stay one step ahead. (Smith System)",
-  "Fatigue is as dangerous as impairment. When drowsy, pull over and rest. Arrive alive, not just on time. (FMCSA 49 CFR §392.3)",
+  "Fatigue is as dangerous as impairment. When drowsy, pull over and rest. Arrive alive, not just on time. (FMCSA)",
   "Eyes on the road, hands on the wheel, mind on driving. One distraction can change everything—pull over to communicate. (NHTSA)",
   "In rain, fog, snow, or wind: slow down, increase distance, stay in control. Better late than never home. (FMCSA)",
   "Liquid loads shift easily. Slow in curves, manage speed—prevent rollover and keep your rig upright. (FMCSA)",
   "When backing, use G.O.A.L.—Get Out And Look every time. Blind spots kill; caution saves. (FMCSA)",
-  "Inspect thoroughly before you roll and after you stop. A missed defect can end your day or your life. (FMCSA 49 CFR §396.13)",
+  "Inspect thoroughly before you roll and after you stop. A missed defect can end your day or your life. (FMCSA)",
   "Complacency creeps in on familiar routes. Stay sharp every mile—routine is the silent killer. (NSC)",
   "Know your Emergency Response Guidebook. In any incident, consult it first to protect yourself and others. (49 CFR §172.602)",
   "Bond and ground properly, verify loads with 3-point match every time. Prevent sparks and incompatible mixes. (NFPA / FMCSA)",
   "Hot conditions? Hydrate often, take breaks, watch for heat illness signs. (OSHA / FMCSA)",
-  "Know your fire extinguisher—PASS: Pull, Aim, Squeeze, Sweep. Check it daily. (FMCSA 49 CFR §393.95)",
+  "Know your fire extinguisher—PASS: Pull, Aim, Squeeze, Sweep. Check it daily. (FMCSA)",
   "Safety is always priority one. No load is worth risking your life or your family’s peace of mind. (FMCSA)"
 ];
 
@@ -323,7 +293,7 @@ function selectForm(form) {
   selectedForm = form;
 }
 
-// ===================== FILLED PDF (Bold Break Times) =====================
+// ===================== FILLED PDF (Bold Breaks) =====================
 async function generateLoadTrackerPDF() {
   try {
     const truck = document.getElementById('truckNum').value.trim() || "—";
@@ -340,48 +310,26 @@ async function generateLoadTrackerPDF() {
     const page = pdfDoc.getPages()[0];
     const { height } = page.getSize();
 
-    // State
     page.drawText(selectedState, { x: 260, y: height - 45, size: 11, font: await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold) });
 
-    // Header
     page.drawText(currentClockTime || "", { x: 90, y: height - 76, size: 9 });
     page.drawText(currentDate || "", { x: 73, y: height - 86, size: 8 });
     page.drawText(truck, { x: 225, y: height - 87, size: 9 });
     page.drawText(trailer, { x: 265, y: height - 87, size: 9 });
     page.drawText(mileage, { x: 330, y: height - 76, size: 9 });
 
-    // Bold 10-min breaks
+    const boldFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+
     currentTenBreaks.forEach((b, i) => {
-      const boldFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
-      if (i === 0) { 
-        page.drawText(b.afterClean, { x: 120, y: height - 113, size: 11, font: boldFont }); 
-        page.drawText(b.beforeClean, { x: 200, y: height - 113, size: 11, font: boldFont }); 
-      }
-      if (i === 1) { 
-        page.drawText(b.afterClean, { x: 325, y: height - 113, size: 11, font: boldFont }); 
-        page.drawText(b.beforeClean, { x: 405, y: height - 113, size: 11, font: boldFont }); 
-      }
-      if (i === 2) { 
-        page.drawText(b.afterClean, { x: 120, y: height - 134, size: 11, font: boldFont }); 
-        page.drawText(b.beforeClean, { x: 200, y: height - 134, size: 11, font: boldFont }); 
-      }
-      if (i === 3) { 
-        page.drawText(b.afterClean, { x: 325, y: height - 134, size: 11, font: boldFont }); 
-        page.drawText(b.beforeClean, { x: 405, y: height - 134, size: 11, font: boldFont }); 
-      }
+      if (i === 0) { page.drawText(b.afterClean, { x: 120, y: height - 113, size: 11, font: boldFont }); page.drawText(b.beforeClean, { x: 200, y: height - 113, size: 11, font: boldFont }); }
+      if (i === 1) { page.drawText(b.afterClean, { x: 325, y: height - 113, size: 11, font: boldFont }); page.drawText(b.beforeClean, { x: 405, y: height - 113, size: 11, font: boldFont }); }
+      if (i === 2) { page.drawText(b.afterClean, { x: 120, y: height - 134, size: 11, font: boldFont }); page.drawText(b.beforeClean, { x: 200, y: height - 134, size: 11, font: boldFont }); }
+      if (i === 3) { page.drawText(b.afterClean, { x: 325, y: height - 134, size: 11, font: boldFont }); page.drawText(b.beforeClean, { x: 405, y: height - 134, size: 11, font: boldFont }); }
     });
 
-    // Bold Meal breaks
     currentMeals.forEach((b, i) => {
-      const boldFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
-      if (i === 0) { 
-        page.drawText(b.afterClean, { x: 120, y: height - 154, size: 11, font: boldFont }); 
-        page.drawText(b.beforeClean, { x: 200, y: height - 154, size: 11, font: boldFont }); 
-      }
-      if (i === 1) { 
-        page.drawText(b.afterClean, { x: 325, y: height - 154, size: 11, font: boldFont }); 
-        page.drawText(b.beforeClean, { x: 405, y: height - 154, size: 11, font: boldFont }); 
-      }
+      if (i === 0) { page.drawText(b.afterClean, { x: 120, y: height - 154, size: 11, font: boldFont }); page.drawText(b.beforeClean, { x: 200, y: height - 154, size: 11, font: boldFont }); }
+      if (i === 1) { page.drawText(b.afterClean, { x: 325, y: height - 154, size: 11, font: boldFont }); page.drawText(b.beforeClean, { x: 405, y: height - 154, size: 11, font: boldFont }); }
     });
 
     const finalPdfBytes = await pdfDoc.save();
@@ -427,27 +375,19 @@ function showRulesModal() {
 
   Object.keys(STATE_RULES).forEach(state => {
     const r = STATE_RULES[state];
-    let html = `
-      <div class="border border-gray-600 rounded-2xl p-5">
-        <div class="font-bold text-amber-400 text-lg mb-3">${state}</div>
-        <div class="text-sm text-gray-300 mb-4">${r.note}</div>
-        <div class="space-y-4">
-          <div>
-            <div class="font-semibold text-emerald-400 mb-2">10-Minute Breaks</div>
-    `;
+    let html = `<div class="border border-gray-600 rounded-2xl p-5">
+      <div class="font-bold text-amber-400 text-lg mb-3">${state}</div>
+      <div class="text-sm text-gray-300 mb-4">${r.note}</div>
+      <div class="space-y-4">`;
 
+    html += `<div><div class="font-semibold text-emerald-400 mb-2">10-Minute Breaks</div>`;
     r.tenDefs.forEach(b => {
-      html += `<div class="text-sm bg-gray-800 rounded p-3 mb-2">
-        ${b.label}: After <strong>${minutesToHrsMins(b.after)}</strong> → Before <strong>${minutesToHrsMins(b.before)}</strong>
-      </div>`;
+      html += `<div class="text-sm bg-gray-800 rounded p-3 mb-2">${b.label}: After <strong>${minutesToHrsMins(b.after)}</strong> → Before <strong>${minutesToHrsMins(b.before)}</strong></div>`;
     });
 
     html += `</div><div><div class="font-semibold text-amber-400 mb-2">30-Minute Meal Breaks</div>`;
-
     r.mealDefs.forEach(b => {
-      html += `<div class="text-sm bg-gray-800 rounded p-3 mb-2">
-        ${b.label}: After <strong>${minutesToHrsMins(b.after)}</strong> → Before <strong>${minutesToHrsMins(b.before)}</strong>
-      </div>`;
+      html += `<div class="text-sm bg-gray-800 rounded p-3 mb-2">${b.label}: After <strong>${minutesToHrsMins(b.after)}</strong> → Before <strong>${minutesToHrsMins(b.before)}</strong></div>`;
     });
 
     html += `</div></div></div>`;
